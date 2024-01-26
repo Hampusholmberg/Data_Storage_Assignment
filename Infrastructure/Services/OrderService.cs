@@ -12,13 +12,4 @@ public class OrderService
     {
         _customerRepository = customerRepository;
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerable<CustomerEntity> GetAllCustomers()
-    {
-        return _customerRepository.GetAll();
-    }
 }

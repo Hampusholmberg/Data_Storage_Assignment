@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-string connectionStringOrderDb = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Education\04._Datalagring\Data_Storage_Assignment\Infrastructure\Data\Orders\order_db.mdf;Integrated Security=True;Connect Timeout=30";
+string connectionStringOrderDb = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Education\04._Datalagring\Data_Storage_Assignment\Infrastructure\Data\Orders\order_db.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True";
 
 string connectionStringProductCatalog = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Education\04._Datalagring\Data_Storage_Assignment\Infrastructure\Data\ProductCatalog\ProductCatalog.mdf;Integrated Security=True;Connect Timeout=30";
 
@@ -33,6 +33,7 @@ var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
     // Business logic services
     services.AddScoped<MenuService>();
     services.AddScoped<OrderService>();
+    services.AddScoped<CustomerService>();
 
 }).Build(); 
 builder.Start();
@@ -43,4 +44,5 @@ builder.Start();
 var menuService = builder.Services.GetRequiredService<MenuService>();
 
 menuService.Run();
+
 

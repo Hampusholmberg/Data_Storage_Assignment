@@ -1,4 +1,5 @@
-﻿using Infrastructure.Entities;
+﻿using Infrastructure.Dtos;
+using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.Identity.Client;
@@ -9,20 +10,31 @@ public class MenuService
 {
     private readonly OrderService _orderService;
     private readonly AddressRepository _addressRepository;
+    private readonly CustomerService _customerService;
 
-    public MenuService(OrderService orderService, AddressRepository addressRepository)
+    public MenuService(OrderService orderService, AddressRepository addressRepository, CustomerService customerService)
     {
         _orderService = orderService;
         _addressRepository = addressRepository;
+        _customerService = customerService;
     }
 
     public void Run() 
     {
-        var addresses = _addressRepository.GetAll();
-        foreach (var address in addresses)
-        {
-            Console.WriteLine($"{address.StreetName}, {address.City}");
-        }
+
+        CustomerDto customer = new CustomerDto 
+        { 
+            Firstname = "hampus",
+            Lastname = "Holmberg",
+            Email = "email.se",
+            StreetName = "testvägen 1",
+            City = "testköping",
+            PostalCode = "12345",
+
+        };
+
+        _customerService.CreateCustomer(customer);
+
     }
 
     public void DefaultMenu()
@@ -119,16 +131,6 @@ public class MenuService
 
     public void CustomerRegisterMenu() 
     {
-        Console.Clear();
-
-        List<CustomerEntity> customers = new List<CustomerEntity>(_orderService.GetAllCustomers());
-        foreach (CustomerEntity customer in customers)
-        {
-            Console.WriteLine($"{customer.Id}, {customer.FirstName}, {customer.LastName}");
-        }
-        
-        
-
     }
 
     // ---------------------------------- //

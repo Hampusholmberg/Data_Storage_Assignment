@@ -27,8 +27,4 @@
     <PackageReference Include="microsoft.extensions.hosting" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\" />
-  </ItemGroup>
-
 </Project>

@@ -109,4 +109,15 @@ public class BaseRepository<TEntity, TContext>
 
     // ------------------------------------ //
 
+
+    public virtual bool Exists(Expression<Func<TEntity, bool>> predicate)
+    {
+        try
+        {
+            return _context.Set<TEntity>().Any(predicate)!;
+        }
+        catch (Exception ex) { Debug.WriteLine("Error :: " + ex.Message); };
+        return false;
+    }
+
 }
