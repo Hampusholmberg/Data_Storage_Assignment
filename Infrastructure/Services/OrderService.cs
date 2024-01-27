@@ -17,6 +17,16 @@ public class OrderService
 
 
     // Delivery Methods
+    public IEnumerable<DeliveryMethodEntity> GetAllDeliveryMethods()
+    {
+        try
+        {
+            var deliveryMethods = _deliveryMethodRepository.GetAll();
+            return deliveryMethods;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
     public bool CreateDeliveryMethod(DeliveryMethodEntity deliveryMethod)
     {
         try
@@ -41,6 +51,16 @@ public class OrderService
 
 
     // Payment Methods
+    public IEnumerable<PaymentMethodEntity> GetAllPaymentMethods()
+    {
+        try
+        {
+            var paymentMethods = _paymentMethodRepository.GetAll();
+            return paymentMethods;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
     public bool CreatePaymentMethod(PaymentMethodEntity paymentMethod)
     {
         try

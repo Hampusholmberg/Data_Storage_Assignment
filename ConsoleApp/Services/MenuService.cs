@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Dtos;
+using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 
@@ -176,7 +177,6 @@ public class MenuService
 
     public void AddOrderMenu() { }
 
-    //NOT DONE
     public void DeliveryMethodRegisterMenu()
     {
         Console.Clear();
@@ -200,15 +200,15 @@ public class MenuService
             switch (menuChoice)
             {
                 case "1":
-                    ShowAllCustomers();
+                    ShowAllDeliveryMethods();
                     break;
 
                 case "2":
-                    DeleteCustomerFromList();
+                    DeleteDeliveryMethodFromList();
                     break;
 
                 case "3":
-                    RegisterNewCustomer();
+                    RegisterNewDeliveryMethod();
                     break;
 
                 default:
@@ -222,7 +222,6 @@ public class MenuService
         } while (menuChoice != null!);
     }
 
-    //NOT DONE
     public void PaymentMethodRegisterMenu()
     {
         Console.Clear();
@@ -246,15 +245,15 @@ public class MenuService
             switch (menuChoice)
             {
                 case "1":
-
+                    ShowAllPaymentMethods();
                     break;
 
                 case "2":
-
+                    DeletePaymentMethodFromList();
                     break;
 
                 case "3":
-
+                    RegisterNewPaymentMethod();
                     break;
 
                 default:
@@ -283,7 +282,6 @@ public class MenuService
         Console.WriteLine("---------------------");
         Console.WriteLine("ALL CUSTOMERS");
         Console.WriteLine("---------------------");
-        Console.WriteLine();
 
         foreach (var customer in customers)
         {
@@ -293,7 +291,6 @@ public class MenuService
             Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
             Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
             Console.WriteLine("---------------------");
-
         }
         PressAnyKey();
     }
@@ -307,7 +304,6 @@ public class MenuService
 
         do
         {
-
             Console.WriteLine("---------------------");
             Console.WriteLine("ALL CUSTOMERS");
             Console.WriteLine("---------------------");
@@ -367,6 +363,7 @@ public class MenuService
         if (menuChoice == "1")
         {
             Console.Clear();
+            Console.WriteLine();
             Console.WriteLine("New Customer");
             Console.WriteLine("---------------------");
             Console.Write("First Name: ");
@@ -412,12 +409,12 @@ public class MenuService
 
 
 
-    // NOT DONE
+
     // -------------- DELIVERY METHODS ---------------- //
 
     public void ShowAllDeliveryMethods()
     {
-        var customers = _customerService.GetAllCustomers();
+        var deliveryMethods = _orderService.GetAllDeliveryMethods();
         Console.Clear();
 
         Console.WriteLine("---------------------");
@@ -425,49 +422,45 @@ public class MenuService
         Console.WriteLine("---------------------");
         Console.WriteLine();
 
-        foreach (var customer in customers)
+        foreach (var deliveryMethod in deliveryMethods)
         {
             Console.WriteLine();
             Console.WriteLine("---------------------");
-            Console.WriteLine($"Customer Number: {customer.Id}");
-            Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
-            Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
+            Console.WriteLine($"Delivery Method ID: {deliveryMethod.Id}");
+            Console.WriteLine($"Delivery Method: {deliveryMethod.DeliveryMethodName}");
             Console.WriteLine("---------------------");
-
         }
         PressAnyKey();
     }
     public void DeleteDeliveryMethodFromList()
     {
-        var customers = _customerService.GetAllCustomers();
+        var deliveryMethods = _orderService.GetAllDeliveryMethods();
         bool loop = true;
-        int customerNumber = 0;
+        int deliveryMethodId = 0;
 
         Console.Clear();
 
         do
         {
-
             Console.WriteLine("---------------------");
-            Console.WriteLine("ALL CUSTOMERS");
+            Console.WriteLine("ALL DELIVERY METHODS");
             Console.WriteLine("---------------------");
             Console.WriteLine();
 
-            foreach (var customer in customers)
+            foreach (var deliveryMethod in deliveryMethods)
             {
                 Console.WriteLine();
                 Console.WriteLine("---------------------");
-                Console.WriteLine($"Customer Number: {customer.Id}");
-                Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
-                Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
+                Console.WriteLine($"Delivery Method ID: {deliveryMethod.Id}");
+                Console.WriteLine($"Delivery Method: {deliveryMethod.DeliveryMethodName}");
                 Console.WriteLine("---------------------");
             }
 
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter customer number of the customer you wish to delete: ");
-                customerNumber = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Enter delivery method ID of the delivery method you wish to delete: ");
+                deliveryMethodId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
             }
@@ -480,12 +473,16 @@ public class MenuService
             }
         } while (loop);
 
-        if (customerNumber != 0)
+        if (deliveryMethodId != 0)
         {
-            var customerToDelete = customers.FirstOrDefault(x => x.Id == customerNumber)!;
-            var result = _customerService.DeleteCustomer(customerToDelete);
+            var deliveryMethodToDelete = deliveryMethods.FirstOrDefault(x => x.Id == deliveryMethodId)!;
+            var result = _orderService.DeleteDeliveryMethod(deliveryMethodToDelete);
             Console.Clear();
-            Console.WriteLine(result);
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Delivery method was deleted.");
+            else Console.WriteLine("Something went wrong, delivery method was not deleted.");
         }
 
         PressAnyKey();
@@ -497,7 +494,7 @@ public class MenuService
 
         Console.WriteLine();
         Console.WriteLine("---------------------");
-        Console.WriteLine("Are you sure you want to add a new customer?");
+        Console.WriteLine("Are you sure you want to add a new delivery method?");
         Console.WriteLine("1.  Yes");
         Console.WriteLine();
         Console.Write("Enter menu choice: ");
@@ -507,40 +504,25 @@ public class MenuService
         if (menuChoice == "1")
         {
             Console.Clear();
-            Console.WriteLine("New Customer");
+            Console.WriteLine();
+            Console.WriteLine("New Delivery Method");
             Console.WriteLine("---------------------");
-            Console.Write("First Name: ");
-            string? firstName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Last Name: ");
-            string? lastName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Email: ");
-            string? email = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Street Name: ");
-            string? streetName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Postal Code: ");
-            string? postalCode = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("City: ");
-            string? city = Console.ReadLine();
+            Console.Write("Delivery Method Name: ");
+            string? deliveryMethodName = Console.ReadLine();
 
-            CustomerDto customerToAdd = new CustomerDto
+            DeliveryMethodEntity deliveryMethodToAdd = new DeliveryMethodEntity
             {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                StreetName = streetName,
-                City = city,
-                PostalCode = postalCode,
+                DeliveryMethodName = deliveryMethodName!,
             };
 
-            var result = _customerService.CreateCustomer(customerToAdd);
+            var result = _orderService.CreateDeliveryMethod(deliveryMethodToAdd);
             Console.Clear();
+
             Console.WriteLine();
-            Console.WriteLine(result);
+            if (result)
+                Console.WriteLine("Delivery method was added.");
+            else Console.WriteLine("Something went wrong, delivery method was not added.");
+
             PressAnyKey();
         }
         Console.Clear();
@@ -550,62 +532,58 @@ public class MenuService
 
 
 
-    // NOT DONE
+
     // -------------- DELIVERY METHODS ---------------- //
 
     public void ShowAllPaymentMethods()
     {
-        var customers = _customerService.GetAllCustomers();
+        var paymentMethods = _orderService.GetAllPaymentMethods();
         Console.Clear();
 
         Console.WriteLine("---------------------");
-        Console.WriteLine("ALL CUSTOMERS");
+        Console.WriteLine("ALL DELIVERY METHODS");
         Console.WriteLine("---------------------");
         Console.WriteLine();
 
-        foreach (var customer in customers)
+        foreach (var paymentMethod in paymentMethods)
         {
             Console.WriteLine();
             Console.WriteLine("---------------------");
-            Console.WriteLine($"Customer Number: {customer.Id}");
-            Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
-            Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
+            Console.WriteLine($"Delivery Method ID: {paymentMethod.Id}");
+            Console.WriteLine($"Delivery Method: {paymentMethod.PaymentMethodName}");
             Console.WriteLine("---------------------");
-
         }
         PressAnyKey();
     }
     public void DeletePaymentMethodFromList()
     {
-        var customers = _customerService.GetAllCustomers();
+        var paymentMethods = _orderService.GetAllPaymentMethods();
         bool loop = true;
-        int customerNumber = 0;
+        int paymentMethodId = 0;
 
         Console.Clear();
 
         do
         {
-
             Console.WriteLine("---------------------");
-            Console.WriteLine("ALL CUSTOMERS");
+            Console.WriteLine("ALL DELIVERY METHODS");
             Console.WriteLine("---------------------");
             Console.WriteLine();
 
-            foreach (var customer in customers)
+            foreach (var paymentMethod in paymentMethods)
             {
                 Console.WriteLine();
                 Console.WriteLine("---------------------");
-                Console.WriteLine($"Customer Number: {customer.Id}");
-                Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
-                Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
+                Console.WriteLine($"Delivery Method ID: {paymentMethod.Id}");
+                Console.WriteLine($"Delivery Method: {paymentMethod.PaymentMethodName}");
                 Console.WriteLine("---------------------");
             }
 
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter customer number of the customer you wish to delete: ");
-                customerNumber = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Enter delivery method ID of the delivery method you wish to delete: ");
+                paymentMethodId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
             }
@@ -618,12 +596,16 @@ public class MenuService
             }
         } while (loop);
 
-        if (customerNumber != 0)
+        if (paymentMethodId != 0)
         {
-            var customerToDelete = customers.FirstOrDefault(x => x.Id == customerNumber)!;
-            var result = _customerService.DeleteCustomer(customerToDelete);
+            var paymentMethodToDelete = paymentMethods.FirstOrDefault(x => x.Id == paymentMethodId)!;
+            var result = _orderService.DeletePaymentMethod(paymentMethodToDelete);
             Console.Clear();
-            Console.WriteLine(result);
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Delivery method was deleted.");
+            else Console.WriteLine("Something went wrong, delivery method was not deleted.");
         }
 
         PressAnyKey();
@@ -635,7 +617,7 @@ public class MenuService
 
         Console.WriteLine();
         Console.WriteLine("---------------------");
-        Console.WriteLine("Are you sure you want to add a new customer?");
+        Console.WriteLine("Are you sure you want to add a new delivery method?");
         Console.WriteLine("1.  Yes");
         Console.WriteLine();
         Console.Write("Enter menu choice: ");
@@ -645,40 +627,25 @@ public class MenuService
         if (menuChoice == "1")
         {
             Console.Clear();
-            Console.WriteLine("New Customer");
+            Console.WriteLine();
+            Console.WriteLine("New Delivery Method");
             Console.WriteLine("---------------------");
-            Console.Write("First Name: ");
-            string? firstName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Last Name: ");
-            string? lastName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Email: ");
-            string? email = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Street Name: ");
-            string? streetName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Postal Code: ");
-            string? postalCode = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("City: ");
-            string? city = Console.ReadLine();
+            Console.Write("Delivery Method Name: ");
+            string? paymentMethodName = Console.ReadLine();
 
-            CustomerDto customerToAdd = new CustomerDto
+            PaymentMethodEntity paymentMethodToAdd = new PaymentMethodEntity
             {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                StreetName = streetName,
-                City = city,
-                PostalCode = postalCode,
+                PaymentMethodName = paymentMethodName!,
             };
 
-            var result = _customerService.CreateCustomer(customerToAdd);
+            var result = _orderService.CreatePaymentMethod(paymentMethodToAdd);
             Console.Clear();
+
             Console.WriteLine();
-            Console.WriteLine(result);
+            if (result)
+                Console.WriteLine("Delivery method was added.");
+            else Console.WriteLine("Something went wrong, delivery method was not added.");
+
             PressAnyKey();
         }
         Console.Clear();
