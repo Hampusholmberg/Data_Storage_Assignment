@@ -1,8 +1,6 @@
 ﻿using Infrastructure.Dtos;
-using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
-using Microsoft.Identity.Client;
 
 namespace ConsoleApp.Services;
 
@@ -22,19 +20,32 @@ public class MenuService
     public void Run() 
     {
 
-        CustomerDto customer = new CustomerDto 
-        { 
-            Firstname = "hampus",
-            Lastname = "Holmberg",
-            Email = "email.se",
-            StreetName = "testvägen 1",
-            City = "testköping",
+        CustomerDto customerToAdd = new CustomerDto
+        {
+            FirstName = "Johan",
+            LastName = "Larsson",
+            Email = "Johnny@email.se",
+            StreetName = "testvägen 87c",
+            City = "Testarp",
             PostalCode = "12345",
 
         };
 
-        _customerService.CreateCustomer(customer);
+        var result = _customerService.CreateCustomer(customerToAdd);
 
+        var customers = _customerService.GetAllCustomers();
+        Console.Clear();
+
+        foreach (var customer in customers)
+        {
+            Console.WriteLine(  $"{customer.FirstName} {customer.LastName}, " +
+                                $"{customer.Email}, " +
+                                $"{customer.Address.StreetName}, " +
+                                $"{customer.Address.PostalCode}, " +
+                                $"{customer.Address.City} ");
+        }
+
+        Console.ReadKey();
     }
 
     public void DefaultMenu()

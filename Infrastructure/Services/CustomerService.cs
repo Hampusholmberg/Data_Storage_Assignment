@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
+using System.Diagnostics;
 
 namespace Infrastructure.Services;
 
@@ -15,23 +16,92 @@ public class CustomerService
         _addressRepository = addressRepository;
     }
 
-
-    // Kollar bara om addressen finns för tillfälet!!!
-    public bool CreateCustomer(CustomerDto customer)
+    /// <summary>
+    /// Checks if customer already exists, if not it will attemp to create it.
+    /// </summary>
+    /// <param name="customer"></param>
+    /// <returns>a status message as a string value.</returns>
+    public string CreateCustomer(CustomerDto customer)
     {
-        
-        if (_addressRepository.Exists(x => x.Id == customer.AddressId))
+        try
         {
-            Console.Clear();
-            Console.WriteLine("Exists");
-        }
-        else 
-        {
-            Console.Clear();
-            Console.WriteLine("Dont exist"); 
-        }
+            // Checks if customer already exists
+            if (!_customerRepository.Exists(
+                x => x.FirstName == customer.FirstName &&
+                     x.LastName == customer.LastName &&
+                     x.Email == customer.Email
+            ))
+            {
+                // Checks if address already exists
+                if (!_addressRepository.Exists(
+                x => x.StreetName == customer.StreetName &&
+                     x.PostalCode == customer.PostalCode &&
+                     x.City == customer.City
+            ))
+                {
+                    _addressRepository.Create(customer);
+                    var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
+                    customer.AddressId = result.Id;
 
-        return false;
-        Console.ReadKey();
+                    try
+                    {
+                        _customerRepository.Create(customer);
+                        return "Customer was created successfully.";
+                    }
+                    catch { return "Something went wrong, customer was not created."; }
+                }
+                else
+                {
+                    var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
+                    customer.AddressId = result.Id;
+
+                    try
+                    {
+                        _customerRepository.Create(customer);
+                        return "Customer was created successfully.";
+                    }
+                    catch { return "Something went wrong, customer was not created."; }
+                }
+            }
+            else
+            return "Customer already exists.";                
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); return "Something went wrong, customer was not created."; }
+    }
+
+
+    /// <summary>
+    /// Deletes a customer from the database.
+    /// </summary>
+    /// <param name="customer"></param>
+    /// <returns>a status message as a string value.</returns>
+    public string DeleteCustomer(CustomerDto customer)
+    {
+        //Get AddressId
+        var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
+        customer.AddressId = result.Id;
+
+        var customerToDelete = _customerRepository.GetOne(x => 
+            x.FirstName == customer.FirstName &&
+            x.LastName == customer.LastName &&
+            x.AddressId == customer.AddressId);
+
+         var delete_result = _customerRepository.Delete(customerToDelete);
+
+        if (delete_result)
+        {
+            return "Customer successfully removed.";
+        }
+        else return "Something went wrong. Customer was not removed.";
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<CustomerEntity> GetAllCustomers()
+    {
+        var customers = _customerRepository.GetAll();
+        return customers;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Dtos;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,4 +30,15 @@ public class CustomerEntity
     //NAVS
     public virtual ICollection<OrderEntity>? Orders { get; set; }
     public virtual AddressEntity Address { get; set; } = null!;
+
+    public static implicit operator CustomerEntity(CustomerDto customer)
+    {
+        return new CustomerEntity
+        {
+            FirstName = customer.FirstName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            AddressId = (int)customer.AddressId
+        };
+    }
 }

@@ -32,5 +32,4 @@ public class AddressEntity
             City = customer.City,
         };
     }
-
 }
