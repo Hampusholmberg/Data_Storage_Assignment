@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20240125151334_init")]
+    [Migration("20240127121525_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -85,7 +85,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AddressId");
 
-                    b.HasIndex("FirstName", "LastName", "AddressId")
+                    b.HasIndex("FirstName", "LastName", "Email")
                         .IsUnique();
 
                     b.ToTable("Customers");

@@ -139,9 +139,9 @@ namespace Infrastructure.Migrations
                 column: "AddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Customers_FirstName_LastName_AddressId",
+                name: "IX_Customers_FirstName_LastName_Email",
                 table: "Customers",
-                columns: new[] { "FirstName", "LastName", "AddressId" },
+                columns: new[] { "FirstName", "LastName", "Email" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

@@ -26,9 +26,9 @@ public partial class OrderDbContext(DbContextOptions<OrderDbContext> options) : 
             .HasForeignKey(ore => ore.OrderId);
 
 
-        //Ensures you cannot register duplicates of a customer, where first name, last name and address are all the same. 
+        //Ensures you cannot register duplicates of a customer, where first name, last name and email are all the same. 
         modelBuilder.Entity<CustomerEntity>()
-            .HasIndex(x => new { x.FirstName, x.LastName, x.AddressId })
+            .HasIndex(x => new { x.FirstName, x.LastName, x.Email })
             .IsUnique();
 
         //Ensures you cannot register duplicates of an address, where street name, postal code and city are all the same. 

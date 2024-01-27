@@ -82,7 +82,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AddressId");
 
-                    b.HasIndex("FirstName", "LastName", "AddressId")
+                    b.HasIndex("FirstName", "LastName", "Email")
                         .IsUnique();
 
                     b.ToTable("Customers");
