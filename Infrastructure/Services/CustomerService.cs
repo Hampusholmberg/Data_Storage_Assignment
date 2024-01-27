@@ -16,6 +16,7 @@ public class CustomerService
         _addressRepository = addressRepository;
     }
 
+    // ------------------ CUSTOMERS ------------------ //
     /// <summary>
     /// Checks if customer already exists, if not it will attemp to create it.
     /// </summary>
@@ -69,39 +70,52 @@ public class CustomerService
         catch (Exception ex) { Debug.WriteLine(ex.Message); return "Something went wrong, customer was not created."; }
     }
 
-
     /// <summary>
     /// Deletes a customer from the database.
     /// </summary>
     /// <param name="customer"></param>
     /// <returns>a status message as a string value.</returns>
-    public string DeleteCustomer(CustomerDto customer)
+    public string DeleteCustomer(CustomerEntity customer)
     {
-        //Get AddressId
-        var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
-        customer.AddressId = result.Id;
-
-        var customerToDelete = _customerRepository.GetOne(x => 
-            x.FirstName == customer.FirstName &&
-            x.LastName == customer.LastName &&
-            x.AddressId == customer.AddressId);
-
-         var delete_result = _customerRepository.Delete(customerToDelete);
-
-        if (delete_result)
+        try
         {
-            return "Customer successfully removed.";
+            //Get AddressId
+            //var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
+            //customer.AddressId = result!.Id;
+
+            //Get CustomerId
+            var customerToDelete = _customerRepository.GetOne(x =>
+                x.FirstName == customer.FirstName &&
+                x.LastName == customer.LastName &&
+                x.AddressId == customer.AddressId);
+
+            var delete_result = _customerRepository.Delete(customerToDelete!);
+
+            if (delete_result)
+            {
+                return "Customer successfully removed.";
+            }
+            else return "Something went wrong. Customer was not removed.";
         }
-        else return "Something went wrong. Customer was not removed.";
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return "Something went wrong. Customer was not removed.";
     }
 
     /// <summary>
-    /// 
+    /// Gets all the customers from the database.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>a list of customer along with their respective address.</returns>
     public IEnumerable<CustomerEntity> GetAllCustomers()
     {
         var customers = _customerRepository.GetAll();
         return customers;
     }
+    // ----------------------------------------------- //
+
+    // ------------------ ADDRESSES ------------------ //
+    // ----------------------------------------------- //
+    // --------------- DELIVERY METHODS -------------- //
+    // ----------------------------------------------- //
+    // --------------- PAYMENT METHODS --------------- //
+    // ----------------------------------------------- //
 }
