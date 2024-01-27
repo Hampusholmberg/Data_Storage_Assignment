@@ -7,7 +7,6 @@ namespace Infrastructure.Repositories;
 
 public class CustomerRepository : BaseRepository<CustomerEntity, OrderDbContext>
 {
-    //Ta bort denna om det klabbar !!
     private readonly OrderDbContext _context;
     public CustomerRepository(OrderDbContext context) : base(context)
     {

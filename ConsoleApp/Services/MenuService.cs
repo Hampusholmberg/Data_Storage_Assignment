@@ -20,6 +20,16 @@ public class MenuService
 
     public void Run() 
     {
+        OrderEntity order = new OrderEntity 
+        {
+            CustomerId = 3,
+            PaymentMethodId = 1,
+            DeliveryMethodId = 1,
+        };
+        Console.WriteLine(_orderService.CreateOrder(order));
+
+
+
         Console.Clear();
         MainMenu();
     }
@@ -94,11 +104,11 @@ public class MenuService
             switch (menuChoice)
             {
                 case "1":
-                    AddOrderMenu();
+                    //AddOrderMenu();
                     break;
 
                 case "2":
-
+                    OrderRegisterMenu();
                     break;
 
                 case "3":
@@ -127,8 +137,6 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
-
-    public void OrderRegisterMenu() { }
 
     public void CustomerRegisterMenu()
     {
@@ -175,7 +183,50 @@ public class MenuService
         } while (menuChoice != null!);
     }
 
-    public void AddOrderMenu() { }
+    public void OrderRegisterMenu()
+    {
+        Console.Clear();
+        string? menuChoice;
+
+        do
+        {
+            Console.WriteLine();
+            Console.WriteLine("Customer Register Menu");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("1.  Show All Orders");
+            Console.WriteLine("2.  Delete Order");
+            Console.WriteLine("3.  Register New Order");
+            Console.WriteLine("9.  Go Back");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            menuChoice = Console.ReadLine();
+
+            switch (menuChoice)
+            {
+                case "1":
+                    ShowAllOrders();
+                    break;
+
+                case "2":
+                    DeleteOrderFromList();
+                    break;
+
+                case "3":
+                    RegisterNewOrder();
+                    break;
+
+                default:
+                    Console.Clear();
+                    break;
+
+                case "9":
+                    Console.Clear();
+                    return;
+            }
+        } while (menuChoice != null!);
+    }
 
     public void DeliveryMethodRegisterMenu()
     {
@@ -268,6 +319,161 @@ public class MenuService
     }
 
     // ------------------------------------------------ //
+
+
+
+
+    // ------------------- ORDERS --------------------- //
+
+    public void ShowAllOrders()
+    {
+        var orders = _orderService.GetAllOrders();
+        Console.Clear();
+
+        Console.WriteLine("---------------------");
+        Console.WriteLine("ALL ORDERS");
+        Console.WriteLine("---------------------");
+
+        foreach (var order in orders)
+        {
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"Order Number: {order.Id}");
+            Console.WriteLine($"Customer: {order.Customer.FirstName} {order.Customer.LastName}, {order.Customer.Email}");
+            Console.WriteLine($"Address: {order.Customer.Address.StreetName}, {order.Customer.Address.PostalCode}, {order.Customer.Address.City}");
+            Console.WriteLine($"Delivery Method: {order.DeliveryMethod.DeliveryMethodName}");
+            Console.WriteLine($"Payment Method: {order.PaymentMethod.PaymentMethodName}");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Ordered Products:");
+            foreach (var orderRow in order.OrderRows)
+            {
+                // IMPLEMENTERA NÅGON TYP AV LISTA MED NAMN PÅ PRODUKTER
+                Console.WriteLine($"{orderRow.Id}, {orderRow.ProductId}, {orderRow.Quantity}st, {orderRow.RowPrice}");
+            }
+            Console.WriteLine("---------------------");
+        }
+        Console.WriteLine();
+        //Console.Write("Enter order number to see details (leave blank to continue): ");
+
+        //// Crashes on faulty input. IMPLENENT TRY CATCH
+        //int orderToExpand = Convert.ToInt32(Console.ReadLine());
+
+        //_orderService.GetOrder(orderToExpand);
+
+        PressAnyKey();
+    }
+    public void DeleteOrderFromList()
+    {
+        var customers = _customerService.GetAllCustomers();
+        bool loop = true;
+        int customerNumber = 0;
+
+        Console.Clear();
+
+        do
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("ALL CUSTOMERS");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+
+            foreach (var customer in customers)
+            {
+                Console.WriteLine();
+                Console.WriteLine("---------------------");
+                Console.WriteLine($"Customer Number: {customer.Id}");
+                Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
+                Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
+                Console.WriteLine("---------------------");
+            }
+
+            try
+            {
+                Console.WriteLine();
+                Console.Write("Enter customer number of the customer you wish to delete: ");
+                customerNumber = Convert.ToInt32(Console.ReadLine());
+
+                loop = false;
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter a number.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        if (customerNumber != 0)
+        {
+            var customerToDelete = customers.FirstOrDefault(x => x.Id == customerNumber)!;
+            var result = _customerService.DeleteCustomer(customerToDelete);
+            Console.Clear();
+            Console.WriteLine(result);
+        }
+
+        PressAnyKey();
+    }
+    public void RegisterNewOrder()
+    {
+        string? menuChoice;
+        Console.Clear();
+
+        Console.WriteLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine("Are you sure you want to add a new customer?");
+        Console.WriteLine("1.  Yes");
+        Console.WriteLine();
+        Console.Write("Enter menu choice: ");
+
+        menuChoice = Console.ReadLine();
+
+        if (menuChoice == "1")
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("New Customer");
+            Console.WriteLine("---------------------");
+            Console.Write("First Name: ");
+            string? firstName = Console.ReadLine();
+            Console.WriteLine("---------------------");
+            Console.Write("Last Name: ");
+            string? lastName = Console.ReadLine();
+            Console.WriteLine("---------------------");
+            Console.Write("Email: ");
+            string? email = Console.ReadLine();
+            Console.WriteLine("---------------------");
+            Console.Write("Street Name: ");
+            string? streetName = Console.ReadLine();
+            Console.WriteLine("---------------------");
+            Console.Write("Postal Code: ");
+            string? postalCode = Console.ReadLine();
+            Console.WriteLine("---------------------");
+            Console.Write("City: ");
+            string? city = Console.ReadLine();
+
+            CustomerDto customerToAdd = new CustomerDto
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                StreetName = streetName,
+                City = city,
+                PostalCode = postalCode,
+            };
+
+            var result = _customerService.CreateCustomer(customerToAdd);
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine(result);
+            PressAnyKey();
+        }
+        Console.Clear();
+    }
+
+
+    // ------------------------------------------------ //
+
 
 
 
@@ -402,8 +608,6 @@ public class MenuService
         }
         Console.Clear();
     }
-
-    // UPDATE ALSO
 
     // ------------------------------------------------ //
 

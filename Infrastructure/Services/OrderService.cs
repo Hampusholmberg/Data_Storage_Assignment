@@ -8,12 +8,45 @@ public class OrderService
 {
     private readonly DeliveryMethodRepository _deliveryMethodRepository;
     private readonly PaymentMethodRepository _paymentMethodRepository;
+    private readonly OrderRepository _orderRepository;
+    private readonly OrderRowRepository _orderRowRepository;
 
-    public OrderService(DeliveryMethodRepository deliveryMethodRepository, PaymentMethodRepository paymentMethodRepository)
+    public OrderService(DeliveryMethodRepository deliveryMethodRepository, PaymentMethodRepository paymentMethodRepository, OrderRepository orderRepository, OrderRowRepository orderRowRepository)
     {
         _deliveryMethodRepository = deliveryMethodRepository;
         _paymentMethodRepository = paymentMethodRepository;
+        _orderRepository = orderRepository;
+        _orderRowRepository = orderRowRepository;
     }
+
+
+    // Orders MUST IMPLEMENT TRY CATCH
+    public int CreateOrder(OrderEntity order)
+    {
+        _orderRepository.Create(order);
+        return order.Id;
+    }
+
+    public IEnumerable<OrderEntity> GetAllOrders()
+    {
+        var orders = _orderRepository.GetAll()!;
+        return orders;
+    }
+
+    public OrderEntity GetOrder(int id)
+    {
+        var order = _orderRepository.GetOne(x => x.Id == id)!;
+        return order;
+    }
+    
+    public bool CreateOrderRow(OrderRowEntity orderRow)
+    {
+        _orderRowRepository.Create(orderRow);
+        return true;
+    }
+
+
+
 
 
     // Delivery Methods
