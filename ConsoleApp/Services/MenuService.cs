@@ -22,8 +22,9 @@ public class MenuService
         MainMenu();
     }
 
-    // ------------------ MAIN MENUS ------------------ //
 
+
+    // ------------------ MAIN MENUS ------------------ //
     public void MainMenu()
     {
         Console.Clear();
@@ -63,7 +64,6 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
-
     public void OrderAdminMenu()
     {
         Console.Clear();
@@ -123,7 +123,6 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
-
     public void CustomerRegisterMenu()
     {
         Console.Clear();
@@ -168,7 +167,6 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
-
     public void OrderRegisterMenu()
     {
         Console.Clear();
@@ -177,7 +175,7 @@ public class MenuService
         do
         {
             Console.WriteLine();
-            Console.WriteLine("Customer Register Menu");
+            Console.WriteLine("Order Register Menu");
             Console.WriteLine("---------------------");
             Console.WriteLine("1.  Show All Orders");
             Console.WriteLine("2.  Delete Order");
@@ -213,7 +211,6 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
-
     public void DeliveryMethodRegisterMenu()
     {
         Console.Clear();
@@ -258,7 +255,6 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
-
     public void PaymentMethodRegisterMenu()
     {
         Console.Clear();
@@ -267,7 +263,7 @@ public class MenuService
         do
         {
             Console.WriteLine();
-            Console.WriteLine("Customer Register Menu");
+            Console.WriteLine("Payment Method Register Menu");
             Console.WriteLine("---------------------");
             Console.WriteLine("1.  Show All Payment Methods");
             Console.WriteLine("2.  Delete Payment Method");
@@ -304,13 +300,9 @@ public class MenuService
         } while (menuChoice != null!);
     }
 
-    // ------------------------------------------------ //
-
-
 
 
     // ------------------- ORDERS --------------------- //
-
     public void ShowAllOrders()
     {
         var orders = _orderService.GetAllOrders();
@@ -374,7 +366,7 @@ public class MenuService
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter order number of the orderyou wish to delete: ");
+                Console.Write("Enter order number of the order you wish to delete (enter 0 to go back): ");
                 orderNumber = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -431,7 +423,11 @@ public class MenuService
             switch (menuChoice)
             {
                 case "1":
-                    order.CustomerId = RegisterNewCustomer().Id;
+                    try
+                    {
+                        order.CustomerId = RegisterNewCustomerFromOrderMenu().Id;
+                    }
+                    catch { }
                     break;
  
                 case "2":
@@ -512,14 +508,8 @@ public class MenuService
     }
 
 
-    // ------------------------------------------------ //
-
-
-
-
 
     // ------------------ CUSTOMERS ------------------- //
-
     public void ShowAllCustomers()
     {
         var customers = _customerService.GetAllCustomers();
@@ -706,14 +696,52 @@ public class MenuService
             return null!; 
         }
     }
+    public CustomerEntity RegisterNewCustomerFromOrderMenu()
+    {
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("New Customer");
+        Console.WriteLine("---------------------");
+        Console.Write("First Name: ");
+        string? firstName = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.Write("Last Name: ");
+        string? lastName = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.Write("Email: ");
+        string? email = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.Write("Street Name: ");
+        string? streetName = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.Write("Postal Code: ");
+        string? postalCode = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.Write("City: ");
+        string? city = Console.ReadLine();
 
-    // ------------------------------------------------ //
+        CustomerDto customerToAdd = new CustomerDto
+        {
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email,
+            StreetName = streetName,
+            City = city,
+            PostalCode = postalCode,
+        };
 
+        var result = _customerService.CreateCustomer(customerToAdd);
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine(result);
+        PressAnyKey();
+        Console.Clear();
+        return customerToAdd;
+    }
 
 
 
     // -------------- DELIVERY METHODS ---------------- //
-
     public void ShowAllDeliveryMethods()
     {
         var deliveryMethods = _orderService.GetAllDeliveryMethods();
@@ -830,20 +858,16 @@ public class MenuService
         Console.Clear();
     }
 
-    // ------------------------------------------------ //
 
 
-
-
-    // -------------- DELIVERY METHODS ---------------- //
-
+    // -------------- PAYMENT METHODS ----------------- //
     public void ShowAllPaymentMethods()
     {
         var paymentMethods = _orderService.GetAllPaymentMethods();
         Console.Clear();
 
         Console.WriteLine("---------------------");
-        Console.WriteLine("ALL DELIVERY METHODS");
+        Console.WriteLine("ALL PAYMENT METHODS");
         Console.WriteLine("---------------------");
         Console.WriteLine();
 
@@ -851,8 +875,8 @@ public class MenuService
         {
             Console.WriteLine();
             Console.WriteLine("---------------------");
-            Console.WriteLine($"Delivery Method ID: {paymentMethod.Id}");
-            Console.WriteLine($"Delivery Method: {paymentMethod.PaymentMethodName}");
+            Console.WriteLine($"Payment Method ID: {paymentMethod.Id}");
+            Console.WriteLine($"Payment Method: {paymentMethod.PaymentMethodName}");
             Console.WriteLine("---------------------");
         }
         PressAnyKey();
@@ -868,7 +892,7 @@ public class MenuService
         do
         {
             Console.WriteLine("---------------------");
-            Console.WriteLine("ALL DELIVERY METHODS");
+            Console.WriteLine("ALL PAYMENT METHODS");
             Console.WriteLine("---------------------");
             Console.WriteLine();
 
@@ -876,15 +900,15 @@ public class MenuService
             {
                 Console.WriteLine();
                 Console.WriteLine("---------------------");
-                Console.WriteLine($"Delivery Method ID: {paymentMethod.Id}");
-                Console.WriteLine($"Delivery Method: {paymentMethod.PaymentMethodName}");
+                Console.WriteLine($"Payment Method ID: {paymentMethod.Id}");
+                Console.WriteLine($"Payment Method: {paymentMethod.PaymentMethodName}");
                 Console.WriteLine("---------------------");
             }
 
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter delivery method ID of the delivery method you wish to delete: ");
+                Console.Write("Enter payment method ID of the payment method you wish to delete: ");
                 paymentMethodId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -906,8 +930,8 @@ public class MenuService
 
             Console.WriteLine();
             if (result)
-                Console.WriteLine("Delivery method was deleted.");
-            else Console.WriteLine("Something went wrong, delivery method was not deleted.");
+                Console.WriteLine("Payment method was deleted.");
+            else Console.WriteLine("Something went wrong, payment method was not deleted.");
         }
 
         PressAnyKey();
@@ -919,7 +943,7 @@ public class MenuService
 
         Console.WriteLine();
         Console.WriteLine("---------------------");
-        Console.WriteLine("Are you sure you want to add a new delivery method?");
+        Console.WriteLine("Are you sure you want to add a new payment method?");
         Console.WriteLine("1.  Yes");
         Console.WriteLine();
         Console.Write("Enter menu choice: ");
@@ -930,9 +954,9 @@ public class MenuService
         {
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine("New Delivery Method");
+            Console.WriteLine("New Payment Method");
             Console.WriteLine("---------------------");
-            Console.Write("Delivery Method Name: ");
+            Console.Write("Payment Method Name: ");
             string? paymentMethodName = Console.ReadLine();
 
             PaymentMethodEntity paymentMethodToAdd = new PaymentMethodEntity
@@ -945,33 +969,17 @@ public class MenuService
 
             Console.WriteLine();
             if (result)
-                Console.WriteLine("Delivery method was added.");
-            else Console.WriteLine("Something went wrong, delivery method was not added.");
+                Console.WriteLine("Payment method was added.");
+            else Console.WriteLine("Something went wrong, payment method was not added.");
 
             PressAnyKey();
         }
         Console.Clear();
     }
 
-    // ------------------------------------------------ //
 
 
-
-
-
-
-
-
-
-
-
-
-
-    public void ProductAdminMenu()
-    {
-
-    }
-
+    // -------------------- MISC ---------------------- //
     public void PressAnyKey() 
     {
         Console.WriteLine();
@@ -979,5 +987,4 @@ public class MenuService
         Console.ReadKey();
         Console.Clear();
     }
-
 }
