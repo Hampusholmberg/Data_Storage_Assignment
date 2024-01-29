@@ -51,7 +51,7 @@ public class MenuService
                     break;
 
                 case "2":
-                    ProductAdminMenu();
+                    //ProductAdminMenu();
                     break;
 
                 default:
