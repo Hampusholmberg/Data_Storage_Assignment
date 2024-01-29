@@ -1,40 +1,26 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities;
-using Infrastructure.Repositories;
 using Infrastructure.Services;
+using System.Diagnostics;
 
 namespace ConsoleApp.Services;
 
 public class MenuService
 {
     private readonly OrderService _orderService;
-    private readonly AddressRepository _addressRepository;
     private readonly CustomerService _customerService;
 
-    public MenuService(OrderService orderService, AddressRepository addressRepository, CustomerService customerService)
+    public MenuService(OrderService orderService, CustomerService customerService)
     {
         _orderService = orderService;
-        _addressRepository = addressRepository;
         _customerService = customerService;
     }
 
     public void Run() 
     {
-        OrderEntity order = new OrderEntity 
-        {
-            CustomerId = 3,
-            PaymentMethodId = 1,
-            DeliveryMethodId = 1,
-        };
-        Console.WriteLine(_orderService.CreateOrder(order));
-
-
-
         Console.Clear();
         MainMenu();
     }
-
-
 
     // ------------------ MAIN MENUS ------------------ //
 
@@ -104,7 +90,7 @@ public class MenuService
             switch (menuChoice)
             {
                 case "1":
-                    //AddOrderMenu();
+                    RegisterNewOrder();
                     break;
 
                 case "2":
@@ -364,34 +350,32 @@ public class MenuService
     }
     public void DeleteOrderFromList()
     {
-        var customers = _customerService.GetAllCustomers();
+        var orders = _orderService.GetAllOrders();
         bool loop = true;
-        int customerNumber = 0;
+        int orderNumber = 0;
 
         Console.Clear();
 
         do
         {
             Console.WriteLine("---------------------");
-            Console.WriteLine("ALL CUSTOMERS");
+            Console.WriteLine("ALL ORDERS");
             Console.WriteLine("---------------------");
             Console.WriteLine();
 
-            foreach (var customer in customers)
+            foreach (var order in orders)
             {
-                Console.WriteLine();
-                Console.WriteLine("---------------------");
-                Console.WriteLine($"Customer Number: {customer.Id}");
-                Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
-                Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
+                Console.WriteLine($"Order Number: {order.Id}");
+                Console.WriteLine($"Customer: {order.Customer.FirstName} {order.Customer.LastName}");
+                Console.WriteLine($"Number of order rows: Logic not implemented yet :)");
                 Console.WriteLine("---------------------");
             }
 
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter customer number of the customer you wish to delete: ");
-                customerNumber = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Enter order number of the orderyou wish to delete: ");
+                orderNumber = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
             }
@@ -404,10 +388,10 @@ public class MenuService
             }
         } while (loop);
 
-        if (customerNumber != 0)
+        if (orderNumber != 0)
         {
-            var customerToDelete = customers.FirstOrDefault(x => x.Id == customerNumber)!;
-            var result = _customerService.DeleteCustomer(customerToDelete);
+            var orderToDelete = orders.FirstOrDefault(x => x.Id == orderNumber)!;
+            var result = _orderService.DeleteOrder(orderToDelete);
             Console.Clear();
             Console.WriteLine(result);
         }
@@ -416,12 +400,14 @@ public class MenuService
     }
     public void RegisterNewOrder()
     {
+        OrderEntity order = new OrderEntity();
+
         string? menuChoice;
         Console.Clear();
 
         Console.WriteLine();
         Console.WriteLine("---------------------");
-        Console.WriteLine("Are you sure you want to add a new customer?");
+        Console.WriteLine("Are you sure you want to add a new order?");
         Console.WriteLine("1.  Yes");
         Console.WriteLine();
         Console.Write("Enter menu choice: ");
@@ -430,42 +416,96 @@ public class MenuService
 
         if (menuChoice == "1")
         {
+            // Get customer-dialogue
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine("New Customer");
             Console.WriteLine("---------------------");
-            Console.Write("First Name: ");
-            string? firstName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Last Name: ");
-            string? lastName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Email: ");
-            string? email = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Street Name: ");
-            string? streetName = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("Postal Code: ");
-            string? postalCode = Console.ReadLine();
-            Console.WriteLine("---------------------");
-            Console.Write("City: ");
-            string? city = Console.ReadLine();
+            Console.WriteLine("New or existing customer?");
+            Console.WriteLine("1.  New Customer");
+            Console.WriteLine("2.  Existing Customer");
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+            menuChoice = Console.ReadLine();
 
-            CustomerDto customerToAdd = new CustomerDto
+            // Get customer-switch
+            switch (menuChoice)
             {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                StreetName = streetName,
-                City = city,
-                PostalCode = postalCode,
-            };
+                case "1":
+                    order.CustomerId = RegisterNewCustomer().Id;
+                    break;
+ 
+                case "2":
+                    order.CustomerId = SelectCustomerFromList().Id;
+                    break;
+            }
 
-            var result = _customerService.CreateCustomer(customerToAdd);
+            // Get delivery method-dialogue
+            List<DeliveryMethodEntity> deliveryMethods = _orderService.GetAllDeliveryMethods().ToList();
             Console.Clear();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Delivery Methods: ");
+            for (int i = 0; i < deliveryMethods.Count(); i++)
+            {
+                Console.WriteLine($"{i+1}.  {deliveryMethods[i].DeliveryMethodName}");
+            }
             Console.WriteLine();
-            Console.WriteLine(result);
+            Console.Write("Enter menu choice: ");
+
+            // Get delivery method-logic
+            bool loop = true;
+            do
+            {
+                try
+                {
+                    int menuChoiceInt = Convert.ToInt32(Console.ReadLine());
+                    order.DeliveryMethodId = deliveryMethods[menuChoiceInt-1].Id;
+                    loop = false;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    Console.WriteLine("You can only enter an integer that is represented in the list of delivery methods.");
+                    PressAnyKey();
+                }
+            } while (loop);
+
+
+            // Get payment method-dialogue
+            List<PaymentMethodEntity> paymentMethods = _orderService.GetAllPaymentMethods().ToList();
+            Console.Clear();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Payment Methods: ");
+            for (int i = 0; i < paymentMethods.Count(); i++)
+            {
+                Console.WriteLine($"{i + 1}.  {paymentMethods[i].PaymentMethodName}");
+            }
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            // Get payment method-logic
+            loop = true;
+            do
+            {
+                try
+                {
+                    int menuChoiceInt = Convert.ToInt32(Console.ReadLine());
+                    order.PaymentMethodId = paymentMethods[menuChoiceInt - 1].Id;
+                    loop = false;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    Console.WriteLine("You can only enter an integer that is represented in the list of payment methods.");
+                    PressAnyKey();
+                }
+            } while (loop);
+            var createdOrder = _orderService.CreateOrder(order);
+
+            // ADD LOGIC TO CREATE ORDER ROWS HERE (MUST SET UP PRODUCT CATALOG DB)
+
+
             PressAnyKey();
         }
         Console.Clear();
@@ -552,7 +592,59 @@ public class MenuService
 
         PressAnyKey();
     }
-    public void RegisterNewCustomer()
+    public CustomerEntity SelectCustomerFromList()
+    {
+        var customers = _customerService.GetAllCustomers();
+        bool loop = true;
+        int customerNumber = 0;
+
+        Console.Clear();
+
+        do
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("ALL CUSTOMERS");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+
+            foreach (var customer in customers)
+            {
+                Console.WriteLine();
+                Console.WriteLine("---------------------");
+                Console.WriteLine($"Customer Number: {customer.Id}");
+                Console.WriteLine($"Customer: {customer.FirstName} {customer.LastName}, {customer.Email}");
+                Console.WriteLine($"Address: {customer.Address.StreetName}, {customer.Address.PostalCode}, {customer.Address.City}");
+                Console.WriteLine("---------------------");
+            }
+
+            try
+            {
+                Console.WriteLine();
+                Console.Write("Enter customer number of the customer you wish to select: ");
+                customerNumber = Convert.ToInt32(Console.ReadLine());
+
+                loop = false;
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter a number.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        if (customerNumber != 0)
+        {
+            var customerToSelect = customers.FirstOrDefault(x => x.Id == customerNumber)!;
+            Console.Clear();
+            return customerToSelect;
+        }
+        else return null!;
+
+        PressAnyKey();
+    }
+    public CustomerEntity RegisterNewCustomer()
     {
         string? menuChoice;
         Console.Clear();
@@ -605,8 +697,14 @@ public class MenuService
             Console.WriteLine();
             Console.WriteLine(result);
             PressAnyKey();
+            Console.Clear();
+            return customerToAdd;
         }
-        Console.Clear();
+        else
+        {
+            Console.Clear();
+            return null!; 
+        }
     }
 
     // ------------------------------------------------ //

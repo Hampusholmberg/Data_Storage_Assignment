@@ -20,32 +20,37 @@ public class OrderService
     }
 
 
-    // Orders MUST IMPLEMENT TRY CATCH
-    public int CreateOrder(OrderEntity order)
+    // Orders -- MUST IMPLEMENT TRY CATCH
+    public OrderEntity CreateOrder(OrderEntity order)
     {
-        _orderRepository.Create(order);
-        return order.Id;
+        order = _orderRepository.Create(order);
+        return order;
     }
-
+    public bool DeleteOrder(OrderEntity order)
+    {
+        try
+        {
+            _orderRepository.Delete(order);
+            return true;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return false;
+    }
     public IEnumerable<OrderEntity> GetAllOrders()
     {
         var orders = _orderRepository.GetAll()!;
         return orders;
     }
-
     public OrderEntity GetOrder(int id)
     {
         var order = _orderRepository.GetOne(x => x.Id == id)!;
         return order;
     }
-    
     public bool CreateOrderRow(OrderRowEntity orderRow)
     {
         _orderRowRepository.Create(orderRow);
         return true;
     }
-
-
 
 
 
