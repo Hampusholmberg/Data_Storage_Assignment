@@ -35,8 +35,6 @@ public class BaseRepository<TEntity, TContext>
         return null!;
     }
 
-    // ------------------------------------ //
-
 
 
     // --------------- READ --------------- //
@@ -71,19 +69,10 @@ public class BaseRepository<TEntity, TContext>
         return null!;
     }
 
-    // ------------------------------------ //
 
 
 
     // -------------- UPDATE -------------- //
-
-
-
-
-
-
-    // ------------------------------------ //
-
 
 
 
@@ -107,9 +96,13 @@ public class BaseRepository<TEntity, TContext>
         return false;
     }
 
-    // ------------------------------------ //
+    // --------------- MISC --------------- //
 
-
+    /// <summary>
+    /// Checks if the entity already exists in the database.
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <returns>true if the entity exists, false if not.</returns>
     public virtual bool Exists(Expression<Func<TEntity, bool>> predicate)
     {
         try

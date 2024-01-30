@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities;
+using Infrastructure.Repositories;
 using Infrastructure.Services;
 using System.Diagnostics;
 
@@ -53,7 +54,7 @@ public class MenuService
                     break;
 
                 case "2":
-                    //ProductAdminMenu();
+                    ProductAdminMenu();
                     break;
 
                 default:
@@ -66,6 +67,7 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
+
     public void OrderAdminMenu()
     {
         Console.Clear();
@@ -76,8 +78,8 @@ public class MenuService
             Console.WriteLine();
             Console.WriteLine("Order Administration Menu");
             Console.WriteLine("---------------------");
-            Console.WriteLine("1.  Register New Order"); // not implemented
-            Console.WriteLine("2.  Order Register"); // not implemented
+            Console.WriteLine("1.  Register New Order");
+            Console.WriteLine("2.  Order Register");
             Console.WriteLine("3.  Register New Customer");
             Console.WriteLine("4.  Customer Register");
             Console.WriteLine("5.  Delivery Method Register");
@@ -125,58 +127,6 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
-    public void ProductAdminMenu()
-    {
-        Console.Clear();
-        string? menuChoice;
-
-        do
-        {
-            Console.WriteLine();
-            Console.WriteLine("Product Administration Menu");
-            Console.WriteLine("---------------------");
-            Console.WriteLine("1.  Register New Product"); // not implemented
-            Console.WriteLine("2.  Product Register"); // not implemented
-            Console.WriteLine("3.  Category Register");
-            Console.WriteLine("4.  Brand Register");
-            Console.WriteLine("9.  Go Back");
-            Console.WriteLine("---------------------");
-            Console.WriteLine();
-            Console.Write("Enter menu choice: ");
-
-            menuChoice = Console.ReadLine();
-
-            switch (menuChoice)
-            {
-                case "1":
-                    RegisterNewProduct();
-                    break;
-
-                case "2":
-                    //ProductRegisterMenu();
-                    break;
-
-                case "3":
-                    //CategoryRegisterMenu(); 
-                    break;
-
-                case "4":
-                    //BrandRegisterMenu();
-                    break;
-
-                default:
-                    Console.Clear();
-                    break;
-
-                case "9":
-                    Console.Clear();
-                    return;
-            }
-        } while (menuChoice != null!);
-    }
-
-
-
     public void CustomerRegisterMenu()
     {
         Console.Clear();
@@ -354,12 +304,117 @@ public class MenuService
         } while (menuChoice != null!);
     }
 
+    public void ProductAdminMenu()
+    {
+        Console.Clear();
+        string? menuChoice;
+
+        do
+        {
+            Console.WriteLine();
+            Console.WriteLine("Product Administration Menu");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("1.  Register New Product");
+            Console.WriteLine("2.  Product Register"); // not implemented
+            Console.WriteLine("3.  Category Register"); // not implemented
+            Console.WriteLine("4.  Brand Register"); // not implemented
+            Console.WriteLine("9.  Go Back");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            menuChoice = Console.ReadLine();
+
+            switch (menuChoice)
+            {
+                case "1":
+                    RegisterNewProduct();
+                    break;
+
+                case "2":
+                    //ProductRegisterMenu();
+                    break;
+
+                case "3":
+                    CategoryRegisterMenu();
+                    break;
+
+                case "4":
+                    //BrandRegisterMenu();
+                    break;
+
+                default:
+                    Console.Clear();
+                    break;
+
+                case "9":
+                    Console.Clear();
+                    return;
+            }
+        } while (menuChoice != null!);
+    }
+    public void ProductRegisterMenu()
+    {
+
+    }
+    public void CategoryRegisterMenu()
+    {
+        Console.Clear();
+        string? menuChoice;
+
+        do
+        {
+            Console.WriteLine();
+            Console.WriteLine("Category Register Menu");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("1.  Show All Categories");
+            Console.WriteLine("2.  Delete Category");
+            Console.WriteLine("3.  Register New Category");
+            Console.WriteLine("9.  Go Back");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            menuChoice = Console.ReadLine();
+
+            switch (menuChoice)
+            {
+                case "1":
+                    ShowAllCategories();
+                    break;
+
+                case "2":
+                    DeleteCategory();
+                    break;
+
+                case "3":
+                    RegisterNewCategory();
+                    break;
+
+                default:
+                    Console.Clear();
+                    break;
+
+                case "9":
+                    Console.Clear();
+                    return;
+            }
+        } while (menuChoice != null!);
+    }
+    public void BrandRegisterMenu()
+    {
+
+    }
+
 
 
     // ------------------- ORDERS --------------------- //
     public void ShowAllOrders()
     {
+        //var orders = _orderService.GetAllOrders().ToList();
         var orders = _orderService.GetAllOrders();
+
+        //var orders = _orderRepository.GetAll();
         Console.Clear();
 
         Console.WriteLine("---------------------");
@@ -381,17 +436,10 @@ public class MenuService
             {
                 var product = _productService.GetProduct(orderRow.ProductId);
 
-                Console.WriteLine($"{orderRow.Id}.   {orderRow.Quantity}pcs, {product.Title}, {orderRow.RowPrice.ToString("0.00")} SEK");
+                Console.WriteLine($"{orderRow.Id}.   {orderRow.Quantity}pcs, {product.Title}, {orderRow.RowPrice:0.00} SEK");
             }
             Console.WriteLine("---------------------");
         }
-        Console.WriteLine();
-        //Console.Write("Enter order number to see details (leave blank to continue): ");
-
-        //// Crashes on faulty input. IMPLENENT TRY CATCH
-        //int orderToExpand = Convert.ToInt32(Console.ReadLine());
-
-        //_orderService.GetOrder(orderToExpand);
 
         PressAnyKey();
     }
@@ -412,9 +460,10 @@ public class MenuService
 
             foreach (var order in orders)
             {
+                int numberOfOrderRows = order.OrderRows.ToList().Count;
                 Console.WriteLine($"Order Number: {order.Id}");
                 Console.WriteLine($"Customer: {order.Customer.FirstName} {order.Customer.LastName}");
-                Console.WriteLine($"Number of order rows: Logic not implemented yet :)");
+                Console.WriteLine($"Number of order rows: {numberOfOrderRows}");
                 Console.WriteLine("---------------------");
             }
 
@@ -424,7 +473,23 @@ public class MenuService
                 Console.Write("Enter order number of the order you wish to delete (enter 0 to go back): ");
                 orderNumber = Convert.ToInt32(Console.ReadLine());
 
-                loop = false;
+                if (orderNumber != 0)
+                {
+                    var orderToDelete = orders.FirstOrDefault(x => x.Id == orderNumber)!;
+                    var result = _orderService.DeleteOrder(orderToDelete);
+                    Console.Clear();
+
+                    if (result)
+                    {
+                        Console.WriteLine("\nPlease enter a valid number.");
+                        loop = false;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nPlease enter a valid number.");
+                    }
+                }
+                else loop = false;
             }
             catch
             {
@@ -435,13 +500,7 @@ public class MenuService
             }
         } while (loop);
 
-        if (orderNumber != 0)
-        {
-            var orderToDelete = orders.FirstOrDefault(x => x.Id == orderNumber)!;
-            var result = _orderService.DeleteOrder(orderToDelete);
-            Console.Clear();
-            Console.WriteLine(result);
-        }
+
 
         PressAnyKey();
     }
@@ -1183,6 +1242,7 @@ public class MenuService
     }
 
 
+
     // ----------------- CATEGORIES ------------------- //
     public int SelectCategoryFromList()
     {
@@ -1220,6 +1280,128 @@ public class MenuService
 
         return 0;
     }
+    public void ShowAllCategories()
+    {
+        var categories = _productService.GetAllCategories();
+        Console.Clear();
+
+        Console.WriteLine("---------------------");
+        Console.WriteLine("ALL CATEGORIES");
+        Console.WriteLine("---------------------");
+        Console.WriteLine();
+
+        foreach (var category in categories)
+        {
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"Category ID: {category.Id}");
+            Console.WriteLine($"Category: {category.CategoryName}");
+            Console.WriteLine("---------------------");
+        }
+        PressAnyKey();
+    }
+    public void DeleteCategory()
+    {
+        var categories = _productService.GetAllCategories();
+        bool loop = true;
+        int categorydId = 0;
+
+        Console.Clear();
+
+        do
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("ALL CATEGORIES");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+
+            foreach (var category in categories)
+            {
+                Console.WriteLine();
+                Console.WriteLine("---------------------");
+                Console.WriteLine($"Category ID: {category.Id}");
+                Console.WriteLine($"Category: {category.CategoryName}");
+                Console.WriteLine("---------------------");
+            }
+
+            try
+            {
+                Console.WriteLine();
+                Console.WriteLine("WARNING - DELETING A CATEGORY WILL DELETE ALL PRODUCTS, SUB CATEGORIES AND ORDERS ASSOCIATED WITH IT.");
+                Console.WriteLine();
+                Console.Write("Enter category ID of the category you wish to delete: ");
+                categorydId = Convert.ToInt32(Console.ReadLine());
+
+                loop = false;
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter a number.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        if (categorydId != 0)
+        {
+            var categoryToDelete = categories.FirstOrDefault(x => x.Id == categorydId)!;
+            var result = _productService.DeleteCategory(categoryToDelete);
+            Console.Clear();
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Category was deleted.");
+            else Console.WriteLine("Something went wrong, category was not deleted.");
+        }
+
+        PressAnyKey();
+    }
+    public void RegisterNewCategory()
+    {
+        string? menuChoice;
+        Console.Clear();
+
+        Console.WriteLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine("Are you sure you want to add a new category?");
+        Console.WriteLine("1.  Yes");
+        Console.WriteLine();
+        Console.Write("Enter menu choice: ");
+
+        menuChoice = Console.ReadLine();
+
+        if (menuChoice == "1")
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("New Category");
+            Console.WriteLine("---------------------");
+            Console.Write("Category Name: ");
+            string? categoryName = Console.ReadLine();
+
+            Category categoryToAdd = new Category
+            {
+                CategoryName = categoryName!,
+            };
+
+            var result = _productService.CreateCategory(categoryToAdd);
+            Console.Clear();
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Category was added.");
+            else Console.WriteLine("Something went wrong, category was not added.");
+
+            PressAnyKey();
+        }
+        Console.Clear();
+    }
+
+    public void RegisterNewSubCategory()
+    {
+    }  // NOT DONE
+
 
 
     // --------------- SUB CATEGORIES  ---------------- //
@@ -1259,6 +1441,7 @@ public class MenuService
 
         return 0;
     }
+
 
 
     // ------------------- BRANDS --------------------- //

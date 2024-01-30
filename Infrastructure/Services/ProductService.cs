@@ -75,7 +75,7 @@ public class ProductService
 
 
     // CATEGORIES
-    public Category CreateCategory(Category category)
+    public bool CreateCategory(Category category)
     {
         if (!_categoryRepository.Exists(
             x => x.CategoryName == category.CategoryName
@@ -84,10 +84,11 @@ public class ProductService
             try
             {
                 _categoryRepository.Create(category);
+                return true;
             }
             catch (Exception ex) { Debug.WriteLine(ex.Message); }
         }
-        return null!;
+        return false;
     }
     public IEnumerable<Category> GetAllCategories()
     {

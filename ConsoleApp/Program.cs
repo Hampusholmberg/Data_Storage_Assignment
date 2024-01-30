@@ -1,6 +1,5 @@
 ﻿using ConsoleApp.Services;
 using Infrastructure.Contexts;
-using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,7 @@ string connectionStringProductCatalog = @"Data Source=(LocalDB)\MSSQLLocalDB;Att
 
 var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
 {
-    // OrderDB services
+    // OrderDb services
     services.AddDbContext<OrderDbContext>(x => x.UseSqlServer(connectionStringOrderDb));
     services.AddScoped<OrderRowRepository>();
     services.AddScoped<OrderRepository>();
@@ -36,14 +35,8 @@ var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
     services.AddScoped<CustomerService>();
     services.AddScoped<ProductService>();
 
-}).Build(); 
+}).Build();
 builder.Start();
 
-//var addressRepository = builder.Services.GetRequiredService<AddressRepository>();
-//var paymentMethodRepository = builder.Services.GetRequiredService<PaymentMethodRepository>();
-
 var menuService = builder.Services.GetRequiredService<MenuService>();
-
 menuService.Run();
-
-

@@ -30,8 +30,12 @@ public class OrderService
     {
         try
         {
-            _orderRepository.Delete(order);
-            return true;
+            var result = _orderRepository.Delete(order);
+            
+            if (result)
+                return true;
+            else 
+                return false;
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return false;
