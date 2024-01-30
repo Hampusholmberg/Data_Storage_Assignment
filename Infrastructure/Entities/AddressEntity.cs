@@ -20,7 +20,6 @@ public class AddressEntity
     [MaxLength(50)]
     public string City { get; set; } = null!;
 
-    //NAVS
     public virtual ICollection<CustomerEntity>? Customers { get; set; }
 
     public static implicit operator AddressEntity(CustomerDto customer) 

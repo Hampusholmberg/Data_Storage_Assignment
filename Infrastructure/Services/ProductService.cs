@@ -1,4 +1,9 @@
-﻿using Infrastructure.Repositories;
+﻿using Infrastructure.Dtos;
+using Infrastructure.Entities;
+using Infrastructure.Repositories;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Numerics;
 
 namespace Infrastructure.Services;
 
@@ -17,9 +22,230 @@ public class ProductService
         _brandRepository = brandRepository;
     }
 
+    // PRODUCTS
+    public bool CreateProduct(Product product)
+    {
+        if (!_productRepository.Exists(
+            x => x.Title == product.Title
+        ))
+        {
+            try
+            {
+                _productRepository.Create(product);
+                return true;
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        }
+        return false!;
+    }
+    public IEnumerable<Product> GetAllProducts()
+    {
+        try
+        {
+            return _productRepository.GetAll();
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public Product GetProduct(int id)
+    {
+        try
+        {
+            var result = _productRepository.GetOne(x => x.ArticleNumber == id);
+         
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public bool DeleteProduct (Product product) 
+    {
+        try
+        {
+            var result = _productRepository.Delete(product);
+            return result;
+
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return false;
+    }
 
 
+    // CATEGORIES
+    public Category CreateCategory(Category category)
+    {
+        if (!_categoryRepository.Exists(
+            x => x.CategoryName == category.CategoryName
+        ))
+        {
+            try
+            {
+                _categoryRepository.Create(category);
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        }
+        return null!;
+    }
+    public IEnumerable<Category> GetAllCategories()
+    {
+        try
+        {
+            return _categoryRepository.GetAll();
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public Category GetCategory(int id)
+    {
+        try
+        {
+            var result = _categoryRepository.GetOne(x => x.Id == id);
+
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public bool DeleteCategory(Category category)
+    {
+        try
+        {
+            var result = _categoryRepository.Delete(category);
+            return result;
+
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return false;
+    }
 
 
+    // SUBCATEGORIES
+    public SubCategory CreateSubCategory(SubCategory subCategory)
+    {
+        if (!_subCategoryRepository.Exists(
+            x => x.SubCategoryName == subCategory.SubCategoryName
+        ))
+        {
+            try
+            {
+                _subCategoryRepository.Create(subCategory);
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        }
+        return null!;
+    }
+    public IEnumerable<SubCategory> GetAllSubCategories()
+    {
+        try
+        {
+            return _subCategoryRepository.GetAll();
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
 
+    /// <summary>
+    /// This overload of the GetAllSubcategories will return all the sub categories that has the passed Category ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public IEnumerable<SubCategory> GetAllSubCategories(int categoryId)
+    {
+        try
+        {
+            var subCategories = _subCategoryRepository.GetAll();
+            List<SubCategory> updatedList = new List<SubCategory>();
+
+            foreach (var subCategory in subCategories) 
+            {
+                if (subCategory.CategoryId == categoryId)
+                    updatedList.Add(subCategory); 
+            }
+            return updatedList;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public SubCategory GetSubCategory(int id)
+    {
+        try
+        {
+            var result = _subCategoryRepository.GetOne(x => x.Id == id);
+
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public bool DeleteSubCategory(SubCategory subCategory)
+    {
+        try
+        {
+            var result = _subCategoryRepository.Delete(subCategory);
+            return result;
+
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return false;
+    }
+
+
+    // BRANDS
+    public Brand CreateBrand(Brand brand)
+    {
+        if (!_brandRepository.Exists(
+            x => x.BrandName == brand.BrandName
+        ))
+        {
+            try
+            {
+                _brandRepository.Create(brand);
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        }
+        return null!;
+    }
+    public IEnumerable<Brand> GetAllBrands()
+    {
+        try
+        {
+            return _brandRepository.GetAll();
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public Brand GetBrand(int id)
+    {
+        try
+        {
+            var result = _brandRepository.GetOne(x => x.Id == id);
+
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+    public bool DeleteSubCategory(Brand brand)
+    {
+        try
+        {
+            var result = _brandRepository.Delete(brand);
+            return result;
+
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return false;
+    }
 }

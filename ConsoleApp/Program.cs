@@ -34,6 +34,7 @@ var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
     services.AddScoped<MenuService>();
     services.AddScoped<OrderService>();
     services.AddScoped<CustomerService>();
+    services.AddScoped<ProductService>();
 
 }).Build(); 
 builder.Start();

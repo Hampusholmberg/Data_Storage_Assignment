@@ -9,11 +9,13 @@ public class MenuService
 {
     private readonly OrderService _orderService;
     private readonly CustomerService _customerService;
+    private readonly ProductService _productService;
 
-    public MenuService(OrderService orderService, CustomerService customerService)
+    public MenuService(OrderService orderService, CustomerService customerService, ProductService productService)
     {
         _orderService = orderService;
         _customerService = customerService;
+        _productService = productService;
     }
 
     public void Run() 
@@ -123,6 +125,58 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
+    public void ProductAdminMenu()
+    {
+        Console.Clear();
+        string? menuChoice;
+
+        do
+        {
+            Console.WriteLine();
+            Console.WriteLine("Product Administration Menu");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("1.  Register New Product"); // not implemented
+            Console.WriteLine("2.  Product Register"); // not implemented
+            Console.WriteLine("3.  Category Register");
+            Console.WriteLine("4.  Brand Register");
+            Console.WriteLine("9.  Go Back");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            menuChoice = Console.ReadLine();
+
+            switch (menuChoice)
+            {
+                case "1":
+                    RegisterNewProduct();
+                    break;
+
+                case "2":
+                    //ProductRegisterMenu();
+                    break;
+
+                case "3":
+                    //CategoryRegisterMenu(); 
+                    break;
+
+                case "4":
+                    //BrandRegisterMenu();
+                    break;
+
+                default:
+                    Console.Clear();
+                    break;
+
+                case "9":
+                    Console.Clear();
+                    return;
+            }
+        } while (menuChoice != null!);
+    }
+
+
+
     public void CustomerRegisterMenu()
     {
         Console.Clear();
@@ -325,8 +379,9 @@ public class MenuService
             Console.WriteLine("Ordered Products:");
             foreach (var orderRow in order.OrderRows)
             {
-                // IMPLEMENTERA NÅGON TYP AV LISTA MED NAMN PÅ PRODUKTER
-                Console.WriteLine($"{orderRow.Id}, {orderRow.ProductId}, {orderRow.Quantity}st, {orderRow.RowPrice}");
+                var product = _productService.GetProduct(orderRow.ProductId);
+
+                Console.WriteLine($"{orderRow.Id}.   {orderRow.Quantity}pcs, {product.Title}, {orderRow.RowPrice.ToString("0.00")} SEK");
             }
             Console.WriteLine("---------------------");
         }
@@ -425,7 +480,7 @@ public class MenuService
                 case "1":
                     try
                     {
-                        order.CustomerId = RegisterNewCustomerFromOrderMenu().Id;
+                        order.CustomerId = RegisterNewCustomerFromOrderMenu();
                     }
                     catch { }
                     break;
@@ -499,8 +554,7 @@ public class MenuService
             } while (loop);
             var createdOrder = _orderService.CreateOrder(order);
 
-            // ADD LOGIC TO CREATE ORDER ROWS HERE (MUST SET UP PRODUCT CATALOG DB)
-
+            AddOrderRows(createdOrder);
 
             PressAnyKey();
         }
@@ -696,7 +750,7 @@ public class MenuService
             return null!; 
         }
     }
-    public CustomerEntity RegisterNewCustomerFromOrderMenu()
+    public int RegisterNewCustomerFromOrderMenu()
     {
         Console.Clear();
         Console.WriteLine();
@@ -731,12 +785,17 @@ public class MenuService
         };
 
         var result = _customerService.CreateCustomer(customerToAdd);
+
+        var customers = _customerService.GetAllCustomers().ToList();
+
+        int customerId = customers.FirstOrDefault(x => x.Email == customerToAdd.Email).Id;
+
         Console.Clear();
         Console.WriteLine();
         Console.WriteLine(result);
         PressAnyKey();
         Console.Clear();
-        return customerToAdd;
+        return customerId;
     }
 
 
@@ -979,6 +1038,269 @@ public class MenuService
 
 
 
+    // ----------------- ORDER ROWS ------------------- //
+    public void AddOrderRows(OrderEntity order)
+    {
+
+        int orderRowId = 0;
+        bool loop = true;
+
+        do
+        {
+            orderRowId++;
+
+            OrderRowEntity orderRow = new OrderRowEntity
+            {
+                OrderId = order.Id,
+                Id = orderRowId               
+            };
+
+            string? menuChoice = "";
+            Console.Clear();
+
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Menu");
+            Console.WriteLine("1.  Add Order Row");
+            Console.WriteLine("2.  Finish Register Order");
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            menuChoice = Console.ReadLine();
+
+            switch(menuChoice)
+            {
+
+                case "1":
+                    orderRow.ProductId = SelectProductFromList();
+                    orderRow.Quantity = SetQuantity();
+                    orderRow.RowPrice = SetPrice(orderRow);
+                    _orderService.CreateOrderRow(orderRow);
+                    break;
+                case "2":
+                    loop = false;
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+        while (loop);
+        
+        Console.Clear();
+    }
+
+
+
+    // ------------------ PRODUCTS -------------------- //
+    public void RegisterNewProduct()
+    {
+        Product productToAdd = new Product();
+
+        string? menuChoice;
+        Console.Clear();
+
+        Console.WriteLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine("Are you sure you want to add a new product?");
+        Console.WriteLine("1.  Yes");
+        Console.WriteLine();
+        Console.Write("Enter menu choice: ");
+
+        menuChoice = Console.ReadLine();
+
+        if (menuChoice == "1")
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("New Product");
+            Console.WriteLine("---------------------");
+            Console.Write("Product Title: ");
+
+            // should not be nullable, FIX
+            productToAdd.Title = Console.ReadLine();
+
+            // should not be nullable, FIX
+            Console.Write("Description: ");
+            productToAdd.Description = Console.ReadLine();
+
+            // TRY CATCH HERE
+            Console.Write("Price: ");
+            productToAdd.Price = Convert.ToDecimal(Console.ReadLine());
+
+            productToAdd.CategoryId = SelectCategoryFromList();
+            productToAdd.SubCategoryId = SelectSubCategoryFromList(productToAdd.CategoryId);
+            productToAdd.BrandId = SelectBrandFromList();
+
+            var result = _productService.CreateProduct(productToAdd);
+            Console.Clear();
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Product was added.");
+            else Console.WriteLine("Something went wrong, product was not added.");
+
+            PressAnyKey();
+        }
+        Console.Clear();
+    }
+    public int SelectProductFromList()
+    {
+        var products = _productService.GetAllProducts().ToList();
+        bool loop = true;
+
+        do
+        {
+            Console.Clear();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Product: ");
+            for (int i = 0; i < products.Count(); i++)
+            {
+                Console.WriteLine($"{i + 1}.  {products[i].Title}");
+            }
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            try
+            {
+                int menuChoiceInt = Convert.ToInt32(Console.ReadLine());
+                var result = products[menuChoiceInt - 1].ArticleNumber;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter an integer that is represented in the list of products.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        return 0;
+    }
+
+
+    // ----------------- CATEGORIES ------------------- //
+    public int SelectCategoryFromList()
+    {
+        var categories = _productService.GetAllCategories().ToList();
+        bool loop = true;
+
+        do
+        {
+            Console.Clear();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Category: ");
+            for (int i = 0; i < categories.Count(); i++)
+            {
+                Console.WriteLine($"{i + 1}.  {categories[i].CategoryName}");
+            }
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            try
+            {
+                int menuChoiceInt = Convert.ToInt32(Console.ReadLine());
+                var result = categories[menuChoiceInt - 1].Id;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter an integer that is represented in the list of categories.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        return 0;
+    }
+
+
+    // --------------- SUB CATEGORIES  ---------------- //
+    public int SelectSubCategoryFromList(int id)
+    {
+        var subCategories = _productService.GetAllSubCategories(id).ToList();
+        bool loop = true;
+
+        do
+        {
+            Console.Clear();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Sub Categories: ");
+            for (int i = 0; i < subCategories.Count(); i++)
+            {
+                Console.WriteLine($"{i + 1}.  {subCategories[i].SubCategoryName}");
+            }
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            try
+            {
+                int menuChoiceInt = Convert.ToInt32(Console.ReadLine());
+                var result = subCategories[menuChoiceInt - 1].Id;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter an integer that is represented in the list of sub categories.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        return 0;
+    }
+
+
+    // ------------------- BRANDS --------------------- //
+    public int SelectBrandFromList()
+    {
+        var brands = _productService.GetAllBrands().ToList();
+        bool loop = true;
+
+        do
+        {
+            Console.Clear();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Brand: ");
+            for (int i = 0; i < brands.Count(); i++)
+            {
+                Console.WriteLine($"{i + 1}.  {brands[i].BrandName}");
+            }
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            try
+            {
+                int menuChoiceInt = Convert.ToInt32(Console.ReadLine());
+                var result = brands[menuChoiceInt - 1].Id;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter an integer that is represented in the list of brands.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        return 0;
+    }
+
+
+
     // -------------------- MISC ---------------------- //
     public void PressAnyKey() 
     {
@@ -986,5 +1308,35 @@ public class MenuService
         Console.WriteLine("Press any key to continue...");
         Console.ReadKey();
         Console.Clear();
+    }
+    public int SetQuantity()
+    {
+        bool loop = true;
+        do
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("---------------------");
+                Console.Write("Enter quantity: ");
+
+                int quantity = Convert.ToInt32(Console.ReadLine());
+                return quantity;
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine("You can only enter an integer.");
+                Console.WriteLine();
+            }
+        } while (loop);
+        return 0;
+    }
+    public decimal SetPrice(OrderRowEntity orderRow)
+    {
+        var result = _productService.GetProduct(orderRow.ProductId);
+        decimal price = result.Price * orderRow.Quantity;
+        return price;
     }
 }

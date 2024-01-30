@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Contexts;
 
@@ -11,6 +12,11 @@ public partial class OrderDbContext(DbContextOptions<OrderDbContext> options) : 
     public DbSet<PaymentMethodEntity> PaymentMethods { get; set; }
     public DbSet<DeliveryMethodEntity> DeliveryMethods { get; set; }
     public DbSet<OrderRowEntity> OrderRows { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddFilter((category, level) => level >= LogLevel.Warning)));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

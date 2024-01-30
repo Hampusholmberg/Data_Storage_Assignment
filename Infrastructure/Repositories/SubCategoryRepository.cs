@@ -3,7 +3,7 @@ using Infrastructure.Entities;
 
 namespace Infrastructure.Repositories;
 
-public class SubCategoryRepository : BaseRepository<SubCategoryEntity, ProductCatalogContext>
+public class SubCategoryRepository : BaseRepository<SubCategory, ProductCatalogContext>
 {
     public SubCategoryRepository(ProductCatalogContext context) : base(context)
     {

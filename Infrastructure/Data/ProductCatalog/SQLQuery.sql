@@ -4,27 +4,27 @@ DROP TABLE SubCategories
 DROP TABLE Categories
 
 CREATE TABLE Categories (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1,1),
   CategoryName NVARCHAR(100) NOT NULL
-);
+)
 
 CREATE TABLE SubCategories (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1,1),
   SubCategoryName NVARCHAR(100) NOT NULL,
-  CategoryId INT REFERENCES Categories(Id) NOT NULL
-);
+  CategoryId INT FOREIGN KEY REFERENCES Categories(Id) NOT NULL
+)
 
 CREATE TABLE Brands (
-  Id INT PRIMARY KEY,
+  Id INT PRIMARY KEY IDENTITY(1,1),
   BrandName NVARCHAR(100) NOT NULL
-);
+)
 
 CREATE TABLE Products (
-  ArticleNumber INT PRIMARY KEY,
+  ArticleNumber INT PRIMARY KEY IDENTITY(1,1),
   Title NVARCHAR(100) NOT NULL,
   Description NVARCHAR(MAX) NOT NULL,
   Price MONEY NOT NULL,
-  CategoryId INT REFERENCES Categories(Id) NOT NULL,
-  SubCategoryId INT REFERENCES SubCategories(Id) NOT NULL,
-  BrandId INT REFERENCES Brands(Id) NOT NULL
-);
+  CategoryId INT FOREIGN KEY REFERENCES Categories(Id) NOT NULL,
+  SubCategoryId INT FOREIGN KEY REFERENCES SubCategories(Id) NOT NULL,
+  BrandId INT FOREIGN KEY REFERENCES Brands(Id) NOT NULL
+)
