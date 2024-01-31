@@ -17,7 +17,6 @@ public class BaseRepository<TEntity, TContext>
 
 
     // -------------- CREATE -------------- //
-
     /// <summary>
     /// Saves an entity to the database.
     /// </summary>
@@ -36,9 +35,7 @@ public class BaseRepository<TEntity, TContext>
     }
 
 
-
     // --------------- READ --------------- //
-
     /// <summary>
     /// This method returns all objects of the table in the database. 
     /// </summary>
@@ -52,7 +49,6 @@ public class BaseRepository<TEntity, TContext>
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return null!;
     }
-
     /// <summary>
     /// This method returns one object of the table in the database.
     /// </summary>
@@ -70,8 +66,6 @@ public class BaseRepository<TEntity, TContext>
     }
 
 
-
-
     // -------------- UPDATE -------------- //
     public virtual TEntity Update(TEntity entity)
     {
@@ -87,7 +81,6 @@ public class BaseRepository<TEntity, TContext>
 
 
     // -------------- DELETE -------------- //
-
     /// <summary>
     /// Deletes an entity from the database. The full entity of the object you wish to delete must be passed.
     /// </summary>
@@ -105,8 +98,8 @@ public class BaseRepository<TEntity, TContext>
         return false;
     }
 
-    // --------------- MISC --------------- //
 
+    // --------------- MISC --------------- //
     /// <summary>
     /// Checks if the entity already exists in the database.
     /// </summary>
@@ -121,5 +114,4 @@ public class BaseRepository<TEntity, TContext>
         catch (Exception ex) { Debug.WriteLine("Error :: " + ex.Message); };
         return false;
     }
-
 }

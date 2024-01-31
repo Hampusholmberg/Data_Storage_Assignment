@@ -1,6 +1,5 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities;
-using Infrastructure.Repositories;
 using Infrastructure.Services;
 using System.Diagnostics;
 
@@ -67,6 +66,7 @@ public class MenuService
             }
         } while (menuChoice != null!);
     }
+
 
     public void OrderAdminMenu()
     {
@@ -309,6 +309,7 @@ public class MenuService
         } while (menuChoice != null!);
     }
 
+
     public void ProductAdminMenu()
     {
         Console.Clear();
@@ -444,7 +445,7 @@ public class MenuService
                     break;
 
                 case "5":
-                    //DeleteSubCategory();
+                    DeleteSubCategory();
                     break;
 
                 case "6":
@@ -1557,7 +1558,7 @@ public class MenuService
                 Console.WriteLine();
                 Console.WriteLine("WARNING - DELETING A CATEGORY WILL DELETE ALL PRODUCTS, SUB CATEGORIES AND ORDERS ASSOCIATED WITH IT.");
                 Console.WriteLine();
-                Console.Write("Enter category ID of the category you wish to delete: ");
+                Console.Write("Enter category ID of the category you wish to delete (enter 0 to go back): ");
                 categorydId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -1681,14 +1682,85 @@ public class MenuService
             Console.WriteLine("---------------------");
             Console.WriteLine($"Category: {category.CategoryName}");
             Console.WriteLine();
+            int count = 1;
 
             foreach (var subCategory in category.SubCategories)
             {
-                int count = 1;
                 Console.WriteLine($"{count}. {subCategory.SubCategoryName}");
                 count++;
             }
         }
+        PressAnyKey();
+    }
+    public void DeleteSubCategory()
+    {
+        var categories = _productService.GetAllCategories();
+        var subCategories = _productService.GetAllSubCategories().ToList();
+        bool loop = true;
+        int subCategorydId = 0;
+
+        Console.Clear();
+
+        do
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("ALL SUB CATEGORIES");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+            int count = 1;
+
+            foreach (var category in categories)
+            {
+                Console.WriteLine();
+                Console.WriteLine("---------------------");
+                Console.WriteLine($"Category: {category.CategoryName}");
+                Console.WriteLine();
+
+                foreach (var subCategory in category.SubCategories)
+                {
+                    Console.WriteLine($"{count}. {subCategory.SubCategoryName}");
+                    count++;
+                }
+            }
+
+            try
+            {
+                Console.WriteLine();
+                Console.WriteLine("WARNING - DELETING A SUB CATEGORY WILL DELETE ALL PRODUCTS AND ORDERS ASSOCIATED WITH IT.");
+                Console.WriteLine();
+                Console.Write("Enter sub category ID of the sub category you wish to delete (enter 0 to go back): ");
+                subCategorydId = Convert.ToInt32(Console.ReadLine());
+
+                if (subCategorydId == 0)
+                    break;
+
+                var subCategoryToDelete = subCategories[subCategorydId-1];
+                var result = _productService.DeleteSubCategory(subCategoryToDelete);
+                Console.Clear();
+                Console.WriteLine();
+
+
+                if (result)
+                {
+                    Console.WriteLine("Category was successfully deleted.");
+                    loop = false;
+                }
+                else
+                {
+                    Console.WriteLine("Something went wrong, category was not deleted.");
+                    loop = false;
+                }
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter a number represented in the list of sub categories.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+
         PressAnyKey();
     }
     public void RegisterNewSubCategory()
