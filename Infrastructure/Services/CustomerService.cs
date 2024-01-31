@@ -72,38 +72,37 @@ public class CustomerService
     /// <summary>
     /// Attemps to update the customer based on the ID. Will check the addresses table and try to match the address to already existing address. Will create a new row in addresses if address does not exist.
     /// </summary>
-    /// <param name="customer"></param>
+    /// <param name="newCustomerDetails"></param>
     /// <returns>a status message as a string value.</returns>
-    public string UpdateCustomer(CustomerDto customer)
+    public string UpdateCustomer(CustomerDto newCustomerDetails, CustomerEntity oldCustomerDetails)
     {
         try
         {
             // Checks if address already exists
             if (!_addressRepository.Exists(
-            x => x.StreetName == customer.StreetName &&
-                    x.PostalCode == customer.PostalCode &&
-                    x.City == customer.City
+                    x => x.StreetName == newCustomerDetails.StreetName &&
+                    x.PostalCode == newCustomerDetails.PostalCode &&
+                    x.City == newCustomerDetails.City
             ))
             {
-                _addressRepository.Create(customer);
-                var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
-                customer.AddressId = result.Id;
+                int result =_addressRepository.Create(newCustomerDetails).Id;
+                newCustomerDetails.AddressId = result;
 
                 try
                 {
-                    _customerRepository.Update(customer);
+                    _customerRepository.Update(oldCustomerDetails, newCustomerDetails);
                     return "Customer was updated successfully.";
                 }
                 catch { return "Something went wrong, customer was not updated."; }
             }
             else
             {
-                var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
-                customer.AddressId = result.Id;
+                var result = _addressRepository.GetOne(x => x.StreetName == newCustomerDetails.StreetName && x.PostalCode == newCustomerDetails.PostalCode && x.City == newCustomerDetails.City);
+                newCustomerDetails.AddressId = result.Id;
 
                 try
                 {
-                    _customerRepository.Update(customer);
+                    _customerRepository.Update(newCustomerDetails);
                     return "Customer was updated successfully.";
                 }
                 catch { return "Something went wrong, customer was not updated."; }

@@ -202,7 +202,7 @@ public class ProductService
 
 
     // BRANDS
-    public Brand CreateBrand(Brand brand)
+    public bool CreateBrand(Brand brand)
     {
         if (!_brandRepository.Exists(
             x => x.BrandName == brand.BrandName
@@ -211,10 +211,11 @@ public class ProductService
             try
             {
                 _brandRepository.Create(brand);
+                return true;
             }
             catch (Exception ex) { Debug.WriteLine(ex.Message); }
         }
-        return null!;
+        return false;
     }
     public IEnumerable<Brand> GetAllBrands()
     {
@@ -239,7 +240,7 @@ public class ProductService
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return null!;
     }
-    public bool DeleteSubCategory(Brand brand)
+    public bool DeleteBrand(Brand brand)
     {
         try
         {

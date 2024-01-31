@@ -24,20 +24,19 @@ public class CustomerRepository : BaseRepository<CustomerEntity, OrderDbContext>
         return null!;
     }
 
-    public override CustomerEntity Update(CustomerEntity entity)
+    public CustomerEntity Update(CustomerEntity oldEntity, CustomerEntity newEntity)
     {
         try
-        {
-            var oldEntity = _context.Customers.FirstOrDefault(x => x.Id == entity.Id);
-            
+        {            
             if (oldEntity != null)
             {
-                oldEntity.FirstName = entity.FirstName;
-                oldEntity.LastName = entity.LastName;
-                oldEntity.Email = entity.Email;
-                oldEntity.AddressId = entity.AddressId;
+                oldEntity.FirstName = newEntity.FirstName;
+                oldEntity.LastName = newEntity.LastName;
+                oldEntity.Email = newEntity.Email;
+                oldEntity.AddressId = newEntity.AddressId;
             }
             _context.SaveChanges();
+            return oldEntity!;
         }
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return null!;

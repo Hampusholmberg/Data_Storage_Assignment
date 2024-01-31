@@ -486,15 +486,15 @@ public class MenuService
                 switch (menuChoice)
                 {
                     case "1":
-                        //ShowAllBrands();
+                        ShowAllBrands();
                         break;
 
                     case "2":
-                        //DeleteBrand();
+                        DeleteBrand();
                         break;
 
                     case "3":
-                        //RegisterNewBrand();
+                        RegisterNewBrand();
                         break;
 
                     default:
@@ -507,7 +507,7 @@ public class MenuService
                 }
             } while (menuChoice != null!);
         }
-    }  // NOT IMPLEMENTED
+    } 
 
 
 
@@ -832,7 +832,7 @@ public class MenuService
 
         CustomerDto newCustomerDetails = new()
         {
-            Id = oldCustomerDetails.Id,
+            //Id = oldCustomerDetails.Id,
             FirstName = firstName,
             LastName = lastName,
             Email = email,
@@ -841,8 +841,9 @@ public class MenuService
             PostalCode = postalCode,
         };
 
-        var result = _customerService.UpdateCustomer(newCustomerDetails);
+        var result = _customerService.UpdateCustomer(newCustomerDetails, oldCustomerDetails);
 
+        Console.WriteLine();
         Console.WriteLine(result);
         Console.WriteLine();
 
@@ -1308,7 +1309,7 @@ public class MenuService
     // ------------------ PRODUCTS -------------------- //
     public void ShowAllProducts()
     {
-        var products = _productService.GetAllProducts();
+        var products = _productService.GetAllProducts().ToList();
         Console.Clear();
 
         Console.WriteLine("---------------------");
@@ -1846,6 +1847,121 @@ public class MenuService
         } while (loop);
 
         return 0;
+    }
+    public void ShowAllBrands()
+    {
+        var brands = _productService.GetAllBrands();
+        Console.Clear();
+
+        Console.WriteLine("---------------------");
+        Console.WriteLine("ALL BRANDS");
+        Console.WriteLine("---------------------");
+        Console.WriteLine();
+
+        foreach (var brand in brands)
+        {
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"Brand ID: {brand.Id}");
+            Console.WriteLine($"Brand Name: {brand.BrandName}");
+            Console.WriteLine("---------------------");
+        }
+        PressAnyKey();
+    }
+    public void DeleteBrand()
+    {
+        var brands = _productService.GetAllBrands();
+        bool loop = true;
+        int brandId = 0;
+
+        Console.Clear();
+
+        do
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("ALL BRANDS");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+
+            foreach (var brand in brands)
+            {
+                Console.WriteLine();
+                Console.WriteLine("---------------------");
+                Console.WriteLine($"Brand ID: {brand.Id}");
+                Console.WriteLine($"Brand Name: {brand.BrandName}");
+                Console.WriteLine("---------------------");
+            }
+
+            try
+            {
+                Console.WriteLine();
+                Console.Write("Enter brand ID of the brand you wish to delete (enter 0 to cancel): ");
+                brandId = Convert.ToInt32(Console.ReadLine());
+
+                loop = false;
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter a number.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        if (brandId != 0)
+        {
+            var brandToDelete = brands.FirstOrDefault(x => x.Id == brandId)!;
+            var result = _productService.DeleteBrand(brandToDelete);
+            Console.Clear();
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Brand was deleted.");
+            else Console.WriteLine("Something went wrong, brand was not deleted.");
+        }
+
+        PressAnyKey();
+    }
+    public void RegisterNewBrand()
+    {
+        string? menuChoice;
+        Console.Clear();
+
+        Console.WriteLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine("Are you sure you want to add a new brand?");
+        Console.WriteLine("1.  Yes");
+        Console.WriteLine();
+        Console.Write("Enter menu choice: ");
+
+        menuChoice = Console.ReadLine();
+
+        if (menuChoice == "1")
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("New Brand");
+            Console.WriteLine("---------------------");
+            Console.Write("Brand Name: ");
+            string? brandName = Console.ReadLine();
+
+            Brand brandToAdd = new Brand
+            {
+                BrandName = brandName!,
+            };
+
+            var result = _productService.CreateBrand(brandToAdd);
+            Console.Clear();
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Brand was added.");
+            else Console.WriteLine("Something went wrong, brand was not added.");
+
+            PressAnyKey();
+        }
+        Console.Clear();
     }
 
 
