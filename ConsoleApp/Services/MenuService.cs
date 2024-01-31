@@ -140,6 +140,7 @@ public class MenuService
             Console.WriteLine("1.  Show All Customers");
             Console.WriteLine("2.  Delete Customer");
             Console.WriteLine("3.  Register New Customer");
+            Console.WriteLine("4.  Update Customer");
             Console.WriteLine("9.  Go Back");
             Console.WriteLine("---------------------");
             Console.WriteLine();
@@ -159,6 +160,10 @@ public class MenuService
 
                 case "3":
                     RegisterNewCustomer();
+                    break;
+
+                case "4":
+                    UpdateCustomerFromList();
                     break;
 
                 default:
@@ -315,9 +320,9 @@ public class MenuService
             Console.WriteLine("Product Administration Menu");
             Console.WriteLine("---------------------");
             Console.WriteLine("1.  Register New Product");
-            Console.WriteLine("2.  Product Register"); // not implemented
-            Console.WriteLine("3.  Category Register"); // not implemented
-            Console.WriteLine("4.  Brand Register"); // not implemented
+            Console.WriteLine("2.  Product Register");
+            Console.WriteLine("3.  Category Register");
+            Console.WriteLine("4.  Brand Register");
             Console.WriteLine("9.  Go Back");
             Console.WriteLine("---------------------");
             Console.WriteLine();
@@ -332,7 +337,7 @@ public class MenuService
                     break;
 
                 case "2":
-                    //ProductRegisterMenu();
+                    ProductRegisterMenu();
                     break;
 
                 case "3":
@@ -340,7 +345,7 @@ public class MenuService
                     break;
 
                 case "4":
-                    //BrandRegisterMenu();
+                    BrandRegisterMenu();
                     break;
 
                 default:
@@ -355,7 +360,47 @@ public class MenuService
     }
     public void ProductRegisterMenu()
     {
+        Console.Clear();
+        string? menuChoice;
 
+        do
+        {
+            Console.WriteLine();
+            Console.WriteLine("Product Register Menu");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("1.  Show All Products");
+            Console.WriteLine("2.  Delete Product");
+            Console.WriteLine("3.  Register New Product");
+            Console.WriteLine("9.  Go Back");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+            Console.Write("Enter menu choice: ");
+
+            menuChoice = Console.ReadLine();
+
+            switch (menuChoice)
+            {
+                case "1":
+                    ShowAllProducts();
+                    break;
+
+                case "2":
+                    DeleteProductFromList();
+                    break;
+
+                case "3":
+                    RegisterNewProduct();
+                    break;
+
+                default:
+                    Console.Clear();
+                    break;
+
+                case "9":
+                    Console.Clear();
+                    return;
+            }
+        } while (menuChoice != null!);
     }
     public void CategoryRegisterMenu()
     {
@@ -370,6 +415,9 @@ public class MenuService
             Console.WriteLine("1.  Show All Categories");
             Console.WriteLine("2.  Delete Category");
             Console.WriteLine("3.  Register New Category");
+            Console.WriteLine("4.  Show All Sub Categories");
+            Console.WriteLine("5.  Delete Sub Category");
+            Console.WriteLine("6.  Register New Sub Category");
             Console.WriteLine("9.  Go Back");
             Console.WriteLine("---------------------");
             Console.WriteLine();
@@ -391,6 +439,18 @@ public class MenuService
                     RegisterNewCategory();
                     break;
 
+                case "4":
+                    ShowAllSubCategories();
+                    break;
+
+                case "5":
+                    //DeleteSubCategory();
+                    break;
+
+                case "6":
+                    RegisterNewSubCategory();
+                    break;
+
                 default:
                     Console.Clear();
                     break;
@@ -403,8 +463,50 @@ public class MenuService
     }
     public void BrandRegisterMenu()
     {
+        {
+            Console.Clear();
+            string? menuChoice;
 
-    }
+            do
+            {
+                Console.WriteLine();
+                Console.WriteLine("Brand Register Menu");
+                Console.WriteLine("---------------------");
+                Console.WriteLine("1.  Show All Brands");
+                Console.WriteLine("2.  Delete Brand");
+                Console.WriteLine("3.  Register New Brand");
+                Console.WriteLine("9.  Go Back");
+                Console.WriteLine("---------------------");
+                Console.WriteLine();
+                Console.Write("Enter menu choice: ");
+
+                menuChoice = Console.ReadLine();
+
+                switch (menuChoice)
+                {
+                    case "1":
+                        //ShowAllBrands();
+                        break;
+
+                    case "2":
+                        //DeleteBrand();
+                        break;
+
+                    case "3":
+                        //RegisterNewBrand();
+                        break;
+
+                    default:
+                        Console.Clear();
+                        break;
+
+                    case "9":
+                        Console.Clear();
+                        return;
+                }
+            } while (menuChoice != null!);
+        }
+    }  // NOT IMPLEMENTED
 
 
 
@@ -435,8 +537,8 @@ public class MenuService
             foreach (var orderRow in order.OrderRows)
             {
                 var product = _productService.GetProduct(orderRow.ProductId);
-
-                Console.WriteLine($"{orderRow.Id}.   {orderRow.Quantity}pcs, {product.Title}, {orderRow.RowPrice:0.00} SEK");
+                if(product != null)
+                    Console.WriteLine($"{orderRow.Id}.   {orderRow.Quantity}pcs, {product.Title}, {orderRow.RowPrice:0.00} SEK");
             }
             Console.WriteLine("---------------------");
         }
@@ -481,7 +583,7 @@ public class MenuService
 
                     if (result)
                     {
-                        Console.WriteLine("\nPlease enter a valid number.");
+                        Console.WriteLine("\nOrder was deleted successfully.");
                         loop = false;
                     }
                     else
@@ -692,6 +794,56 @@ public class MenuService
             Console.Clear();
             Console.WriteLine(result);
         }
+
+        PressAnyKey();
+    }
+    public void UpdateCustomerFromList()
+    {
+        var oldCustomerDetails = SelectCustomerFromList();
+
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("Update Customer");
+        Console.WriteLine("---------------------");
+        Console.WriteLine($"OLD First Name: {oldCustomerDetails.FirstName}");
+        Console.Write("NEW First Name: ");
+        string? firstName = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine($"OLD Last Name: {oldCustomerDetails.LastName}");
+        Console.Write("NEW  Last Name: ");
+        string? lastName = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine($"OLD Email: {oldCustomerDetails.Email}");
+        Console.Write("NEW Email: ");
+        string? email = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine($"OLD Street Name: {oldCustomerDetails.Address.StreetName}");
+        Console.Write("NEW Street Name: ");
+        string? streetName = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine($"OLD First Name: {oldCustomerDetails.Address.PostalCode}");
+        Console.Write("NEW Postal Code: ");
+        string? postalCode = Console.ReadLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine($"OLD First Name: {oldCustomerDetails.Address.City}");
+        Console.Write("NEW City: ");
+        string? city = Console.ReadLine();
+
+        CustomerDto newCustomerDetails = new()
+        {
+            Id = oldCustomerDetails.Id,
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email,
+            StreetName = streetName,
+            City = city,
+            PostalCode = postalCode,
+        };
+
+        var result = _customerService.UpdateCustomer(newCustomerDetails);
+
+        Console.WriteLine(result);
+        Console.WriteLine();
 
         PressAnyKey();
     }
@@ -1153,6 +1305,82 @@ public class MenuService
 
 
     // ------------------ PRODUCTS -------------------- //
+    public void ShowAllProducts()
+    {
+        var products = _productService.GetAllProducts();
+        Console.Clear();
+
+        Console.WriteLine("---------------------");
+        Console.WriteLine("ALL PRODUCTS");
+        Console.WriteLine("---------------------");
+        Console.WriteLine();
+
+        foreach (var product in products)
+        {
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"Article Number: {product.ArticleNumber}");
+            Console.WriteLine($"Title: {product.Title} - {product.Brand.BrandName} - {product.Description}");
+            Console.WriteLine($"Category: {product.Category.CategoryName} -> {product.SubCategory.SubCategoryName}");
+            Console.WriteLine("---------------------");
+        }
+        PressAnyKey();
+    }
+    public void DeleteProductFromList()
+    {
+        var products = _productService.GetAllProducts();
+        bool loop = true;
+        int articleNumber = 0;
+
+        Console.Clear();
+
+        do
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("ALL PRODUCTS");
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+
+            foreach (var product in products)
+            {
+                Console.WriteLine();
+                Console.WriteLine("---------------------");
+                Console.WriteLine($"Article Number: {product.ArticleNumber}");
+                Console.WriteLine($"Title: {product.Title} - {product.Brand.BrandName} - {product.Description}");
+                Console.WriteLine($"Category: {product.Category.CategoryName} -> {product.SubCategory.SubCategoryName}");
+                Console.WriteLine("---------------------");
+            }
+
+            try
+            {
+                Console.WriteLine();
+                Console.Write("Enter article number of the product you wish to delete: ");
+                articleNumber = Convert.ToInt32(Console.ReadLine());
+
+                loop = false;
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("You can only enter a number.");
+                PressAnyKey();
+            }
+        } while (loop);
+
+        if (articleNumber != 0)
+        {
+            var productToDelete = products.FirstOrDefault(x => x.ArticleNumber == articleNumber)!;
+            var result = _productService.DeleteProduct(productToDelete);
+            Console.Clear();
+
+            if (result)
+                Console.WriteLine("Product was deleted.");
+            else Console.WriteLine("Something went wrong, product was not deleted.");
+        }
+
+        PressAnyKey();
+    }
     public void RegisterNewProduct()
     {
         Product productToAdd = new Product();
@@ -1398,10 +1626,6 @@ public class MenuService
         Console.Clear();
     }
 
-    public void RegisterNewSubCategory()
-    {
-    }  // NOT DONE
-
 
 
     // --------------- SUB CATEGORIES  ---------------- //
@@ -1440,6 +1664,76 @@ public class MenuService
         } while (loop);
 
         return 0;
+    }
+    public void ShowAllSubCategories()
+    {
+        var categories = _productService.GetAllCategories();
+        Console.Clear();
+
+        Console.WriteLine("---------------------");
+        Console.WriteLine("ALL SUB CATEGORIES");
+        Console.WriteLine("---------------------");
+        Console.WriteLine();
+
+        foreach (var category in categories)
+        {
+            Console.WriteLine();
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"Category: {category.CategoryName}");
+            Console.WriteLine();
+
+            foreach (var subCategory in category.SubCategories)
+            {
+                int count = 1;
+                Console.WriteLine($"{count}. {subCategory.SubCategoryName}");
+                count++;
+            }
+        }
+        PressAnyKey();
+    }
+    public void RegisterNewSubCategory()
+    {
+        string? menuChoice;
+        Console.Clear();
+
+        Console.WriteLine();
+        Console.WriteLine("---------------------");
+        Console.WriteLine("Are you sure you want to add a new sub category?");
+        Console.WriteLine("1.  Yes");
+        Console.WriteLine("2.  No");
+        Console.WriteLine();
+        Console.Write("Enter menu choice: ");
+
+        menuChoice = Console.ReadLine();
+
+        if (menuChoice == "1")
+        {
+            int categoryId = SelectCategoryFromList();
+
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("New Sub Category");
+            Console.WriteLine("---------------------");
+            Console.Write("Sub Category Name: ");
+            string? subCategoryName = Console.ReadLine();
+
+            SubCategory subCategoryToAdd = new SubCategory
+            {
+                SubCategoryName = subCategoryName!,
+                CategoryId = categoryId
+            };
+
+            var result = _productService.CreateSubCategory(subCategoryToAdd);
+            Console.Clear();
+
+            Console.WriteLine();
+            if (result)
+                Console.WriteLine("Sub category was added.");
+            else Console.WriteLine("Something went wrong, sub category was not added.");
+
+            PressAnyKey();
+        }
+        Console.Clear();
     }
 
 

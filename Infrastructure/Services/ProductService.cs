@@ -127,7 +127,7 @@ public class ProductService
 
 
     // SUBCATEGORIES
-    public SubCategory CreateSubCategory(SubCategory subCategory)
+    public bool CreateSubCategory(SubCategory subCategory)
     {
         if (!_subCategoryRepository.Exists(
             x => x.SubCategoryName == subCategory.SubCategoryName
@@ -135,11 +135,12 @@ public class ProductService
         {
             try
             {
-                _subCategoryRepository.Create(subCategory);
+                var result = _subCategoryRepository.Create(subCategory);
+                return true;
             }
             catch (Exception ex) { Debug.WriteLine(ex.Message); }
         }
-        return null!;
+        return false;
     }
     public IEnumerable<SubCategory> GetAllSubCategories()
     {

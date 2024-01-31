@@ -37,7 +37,8 @@ public class CustomerEntity
             FirstName = customer.FirstName,
             LastName = customer.LastName,
             Email = customer.Email,
-            AddressId = (int)customer.AddressId
+            AddressId = (int)customer.AddressId,
+            Id = (int)customer.Id
         };
     }
 }

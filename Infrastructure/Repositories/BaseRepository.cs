@@ -73,8 +73,17 @@ public class BaseRepository<TEntity, TContext>
 
 
     // -------------- UPDATE -------------- //
-
-
+    public virtual TEntity Update(TEntity entity)
+    {
+        try
+        {
+            _context.Set<TEntity>().Update(entity);
+            _context.SaveChanges();
+            return entity;
+        }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+        return null!;
+    }
 
 
     // -------------- DELETE -------------- //
