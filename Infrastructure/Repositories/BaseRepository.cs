@@ -10,7 +10,7 @@ public class BaseRepository<TEntity, TContext>
 {
     private readonly TContext _context;
 
-    protected BaseRepository(TContext context)
+    public BaseRepository(TContext context)
     {
         _context = context;
     }

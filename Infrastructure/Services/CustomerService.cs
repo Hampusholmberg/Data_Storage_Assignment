@@ -120,11 +120,6 @@ public class CustomerService
     {
         try
         {
-            //Get AddressId
-            //var result = _addressRepository.GetOne(x => x.StreetName == customer.StreetName && x.PostalCode == customer.PostalCode && x.City == customer.City);
-            //customer.AddressId = result!.Id;
-
-            //Get CustomerId
             var customerToDelete = _customerRepository.GetOne(x =>
                 x.FirstName == customer.FirstName &&
                 x.LastName == customer.LastName &&

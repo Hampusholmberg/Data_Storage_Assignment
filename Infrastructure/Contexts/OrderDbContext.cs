@@ -4,8 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Contexts;
 
-public partial class OrderDbContext(DbContextOptions<OrderDbContext> options) : DbContext(options)
+public partial class OrderDbContext : DbContext
 {
+    public OrderDbContext(DbContextOptions<OrderDbContext> options) : base(options)
+    {
+    }
+
     public DbSet<OrderEntity> Orders { get; set; }
     public DbSet<CustomerEntity> Customers { get; set; }
     public DbSet<AddressEntity> Addresses { get; set; }
