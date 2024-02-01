@@ -49,6 +49,7 @@ public class BaseRepository<TEntity, TContext>
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return null!;
     }
+
     /// <summary>
     /// This method returns one object of the table in the database.
     /// </summary>

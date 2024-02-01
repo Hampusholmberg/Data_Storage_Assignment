@@ -17,6 +17,7 @@ public class CustomerService
     }
 
     // ------------------ CUSTOMERS ------------------ //
+ 
     /// <summary>
     /// Checks if customer already exists, if not it will attemp to create it.
     /// </summary>
@@ -69,6 +70,7 @@ public class CustomerService
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); return "Something went wrong, customer was not created."; }
     }
+   
     /// <summary>
     /// Attemps to update the customer based on the ID. Will check the addresses table and try to match the address to already existing address. Will create a new row in addresses if address does not exist.
     /// </summary>
@@ -110,7 +112,7 @@ public class CustomerService
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); return "Something went wrong, customer was not created."; }
     }
-
+   
     /// <summary>
     /// Deletes a customer from the database.
     /// </summary>
@@ -136,7 +138,7 @@ public class CustomerService
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return "Something went wrong. Customer was not removed.";
     }
-
+   
     /// <summary>
     /// Gets all the customers from the database.
     /// </summary>

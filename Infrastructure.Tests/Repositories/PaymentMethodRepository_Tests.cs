@@ -27,4 +27,33 @@ public class PaymentMethodRepository_Tests
 
         genericTests.Delete_ShouldRemoveEntityFromDatabase_OrderDbContext(paymentMethod);
     }
+
+    [Fact]
+    public void GetAll_ShouldGetAllPaymentMethodsFromDatabase()
+    {
+        var testList = new List<PaymentMethodEntity>();
+
+        for (int i = 0; i < 10; i++)
+        {
+            PaymentMethodEntity paymentMethod = new PaymentMethodEntity
+            {
+                PaymentMethodName = $"Test{i}",
+            };
+
+            testList.Add(paymentMethod);
+        }
+
+        genericTests.GetAll_ShouldReturnAListWithAllTheObjectOfTheSelectedEntity_OrderDbContext(testList);
+    }
+
+    [Fact]
+    public void GetOne_ShouldGetOnePaymentMethodFromDatabase()
+    {
+        PaymentMethodEntity paymentMethod = new PaymentMethodEntity
+        {
+            PaymentMethodName = $"Test",
+        };
+
+        genericTests.GetOne_ShouldReturnAnEntityBasedOnExpression_OrderDbContext(paymentMethod);
+    }
 }

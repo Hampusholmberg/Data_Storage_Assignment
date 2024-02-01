@@ -3,6 +3,7 @@ using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Infrastructure.Tests.Repositories;
 
@@ -16,6 +17,9 @@ public class BaseRepository_Tests
         .UseInMemoryDatabase($"{Guid.NewGuid()}")
         .Options);
 
+
+    // -------------- ORDER DB -------------- //
+
     /// <summary>
     /// Generic testing of the "create"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
     /// </summary>
@@ -28,9 +32,7 @@ public class BaseRepository_Tests
 
         // Act
         var result = repository.Create(entity);
-        var primaryKeyProperty = typeof(TEntity).GetProperties()
-        .FirstOrDefault(x => x.GetCustomAttributes(typeof(KeyAttribute), false).Any())
-        ?.GetValue(entity);
+        var primaryKeyProperty = typeof(TEntity).GetProperties().FirstOrDefault(x => x.GetCustomAttributes(typeof(KeyAttribute), false).Any())?.GetValue(entity);
 
         // Assert
         using (OrderDbContext context = _orderDbContext)
@@ -52,7 +54,6 @@ public class BaseRepository_Tests
         
 
         // Act
-
         var primaryKeyProperty = typeof(TEntity).GetProperties().FirstOrDefault(x => x.GetCustomAttributes(typeof(KeyAttribute), false).Any())?.GetValue(entity);
         var result = repository.Delete(entity);
 
@@ -64,5 +65,70 @@ public class BaseRepository_Tests
             Assert.NotEqual(addedEntity, _orderDbContext.Set<TEntity>().Find(primaryKeyProperty));
         }
     }
+
+    /// <summary>
+    /// Generic testing of the "get all"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public void GetAll_ShouldReturnAListWithAllTheObjectOfTheSelectedEntity_OrderDbContext<TEntity>(List <TEntity> entities) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, OrderDbContext>(_orderDbContext);
+        
+        foreach (var entity in entities)
+        {
+            repository.Create(entity);
+        }
+
+        // Act
+        var testlist = repository.GetAll();
+
+        // Assert
+        using (OrderDbContext context = _orderDbContext)
+        {
+            Assert.Equal(testlist.Count(), entities.Count());
+        }
+    }
+
+    /// <summary>
+    /// Generic testing of the "get one"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public void GetOne_ShouldReturnAnEntityBasedOnExpression_OrderDbContext<TEntity>(TEntity entity) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, OrderDbContext>(_orderDbContext);
+
+        // Act
+        var addedEntity = repository.Create(entity);
+        var primaryKeyValue = _orderDbContext.Entry(addedEntity).Property("Id").CurrentValue;
+        var result = repository.GetOne(x => EF.Property<int>(x, "Id") == (int)primaryKeyValue);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(result, addedEntity);
+    }
+
+    /// <summary>
+    /// Generic testing of the "get one"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public void Update_ShouldUpdateAnEntity_OrderDbContext<TEntity>(TEntity oldEntity, TEntity newEntity) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, OrderDbContext>(_orderDbContext);
+
+        // Act
+        oldEntity = repository.Create(oldEntity);
+        var updatedEntity = repository.Update(newEntity);
+
+        // Assert
+        Assert.NotEqual(oldEntity, updatedEntity);
+    }
+
+
+
+    // ------------- PRODUCT DB ------------- //
+
 
 }
