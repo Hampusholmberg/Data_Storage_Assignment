@@ -15,10 +15,6 @@ public class BaseRepository<TEntity, TContext>
         _context = context;
     }
 
-    public BaseRepository()
-    {
-    }
-
 
     // -------------- CREATE -------------- //
     /// <summary>

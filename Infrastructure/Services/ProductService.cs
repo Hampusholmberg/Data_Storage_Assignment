@@ -47,6 +47,30 @@ public class ProductService
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return null!;
     }
+
+    /// <summary>
+    /// This overload of the GetAllSubcategories will return all the sub categories that has the passed Category ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public IEnumerable<Product> GetAllProducts(int subCategoryId)
+    {
+        try
+        {
+            var products = _productRepository.GetAll();
+            List<Product> updatedList = new List<Product>();
+
+            foreach (var product in products)
+            {
+                if (product.SubCategoryId == subCategoryId)
+                    updatedList.Add(product);
+            }
+            return updatedList;
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+        return null!;
+    }
+
     public Product GetProduct(int id)
     {
         try

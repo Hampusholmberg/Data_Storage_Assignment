@@ -17,6 +17,5 @@ public class OrderRowEntity
     [Required]
     public decimal RowPrice { get; set; }
 
-    //NAVS
     public virtual OrderEntity Order {  get; set; } = null!;
 }

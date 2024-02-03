@@ -573,7 +573,7 @@ public class MenuService
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter order number of the order you wish to delete (enter 0 to go back): ");
+                Console.Write("Enter order number of the order you wish to delete (enter 0 to abort): ");
                 orderNumber = Convert.ToInt32(Console.ReadLine());
 
                 if (orderNumber != 0)
@@ -618,6 +618,7 @@ public class MenuService
         Console.WriteLine("---------------------");
         Console.WriteLine("Are you sure you want to add a new order?");
         Console.WriteLine("1.  Yes");
+        Console.WriteLine("2.  No");
         Console.WriteLine();
         Console.Write("Enter menu choice: ");
 
@@ -656,6 +657,7 @@ public class MenuService
             List<DeliveryMethodEntity> deliveryMethods = _orderService.GetAllDeliveryMethods().ToList();
             Console.Clear();
 
+            Console.WriteLine();
             Console.WriteLine("---------------------");
             Console.WriteLine("Delivery Methods: ");
             for (int i = 0; i < deliveryMethods.Count(); i++)
@@ -688,6 +690,7 @@ public class MenuService
             List<PaymentMethodEntity> paymentMethods = _orderService.GetAllPaymentMethods().ToList();
             Console.Clear();
 
+            Console.WriteLine();
             Console.WriteLine("---------------------");
             Console.WriteLine("Payment Methods: ");
             for (int i = 0; i < paymentMethods.Count(); i++)
@@ -773,8 +776,13 @@ public class MenuService
 
             try
             {
+
                 Console.WriteLine();
-                Console.Write("Enter customer number of the customer you wish to delete: ");
+                Console.WriteLine("WARNING - DELETING A CUSTOMER WILL DELETE ALL ORDERS ASSOCIATED WITH IT.\n");
+                Console.Write("Enter customer number of the customer you wish to delete (enter 0 to abort): ");
+
+                
+
                 customerNumber = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -832,7 +840,6 @@ public class MenuService
 
         CustomerDto newCustomerDetails = new()
         {
-            //Id = oldCustomerDetails.Id,
             FirstName = firstName,
             LastName = lastName,
             Email = email,
@@ -849,6 +856,11 @@ public class MenuService
 
         PressAnyKey();
     }
+
+    /// <summary>
+    /// Select a customer from list of available customers.
+    /// </summary>
+    /// <returns>the customer entity of the selected customer</returns>
     public CustomerEntity SelectCustomerFromList()
     {
         var customers = _customerService.GetAllCustomers();
@@ -901,6 +913,11 @@ public class MenuService
 
         PressAnyKey();
     }
+
+    /// <summary>
+    /// Standard dialogue for creating a new customer.
+    /// </summary>
+    /// <returns>the customer entity of the created customer</returns>
     public CustomerEntity RegisterNewCustomer()
     {
         string? menuChoice;
@@ -963,6 +980,11 @@ public class MenuService
             return null!; 
         }
     }
+
+    /// <summary>
+    /// Dialogue for creating a new customer from the "register new order"-menu.
+    /// </summary>
+    /// <returns>the customer Id of the created customer</returns>
     public int RegisterNewCustomerFromOrderMenu()
     {
         Console.Clear();
@@ -1061,7 +1083,8 @@ public class MenuService
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter delivery method ID of the delivery method you wish to delete: ");
+                Console.WriteLine("WARNING - DELETING A DELIVERY METHOD WILL DELETE ALL ORDERS ASSOCIATED WITH IT.\n");
+                Console.Write("Enter delivery method ID of the delivery method you wish to delete (enter 0 to abort): ");
                 deliveryMethodId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -1180,7 +1203,8 @@ public class MenuService
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter payment method ID of the payment method you wish to delete: ");
+                Console.WriteLine("WARNING - DELETING A PAYMENT METHOD WILL DELETE ALL ORDERS ASSOCIATED WITH IT.\n");
+                Console.Write("Enter payment method ID of the payment method you wish to delete (enter 0 to abort): ");
                 paymentMethodId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -1285,7 +1309,9 @@ public class MenuService
             {
 
                 case "1":
-                    orderRow.ProductId = SelectProductFromList();
+                    var category = SelectCategoryFromList();
+                    var subCategory = SelectSubCategoryFromList(category);
+                    orderRow.ProductId = SelectProductFromList(subCategory);
                     orderRow.Quantity = SetQuantity();
                     orderRow.RowPrice = SetPrice(orderRow);
                     _orderService.CreateOrderRow(orderRow);
@@ -1356,7 +1382,8 @@ public class MenuService
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter article number of the product you wish to delete: ");
+                Console.WriteLine("WARNING - DELETING A PRODUCT WILL DELETE ALL ORDER ROWS ASSOCIATED WITH IT.\n");
+                Console.Write("Enter article number of the product you wish to delete (enter 0 to abort): ");
                 articleNumber = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -1401,22 +1428,63 @@ public class MenuService
 
         if (menuChoice == "1")
         {
-            Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine("New Product");
-            Console.WriteLine("---------------------");
-            Console.Write("Product Title: ");
+            do
+            {
+                Console.Clear();
+                Console.WriteLine();
+                Console.WriteLine("New Product");
+                Console.WriteLine("---------------------");
+                Console.Write("Product Title: ");
 
-            // should not be nullable, FIX
-            productToAdd.Title = Console.ReadLine();
+                productToAdd.Title = Console.ReadLine()!;
 
-            // should not be nullable, FIX
-            Console.Write("Description: ");
-            productToAdd.Description = Console.ReadLine();
+                if (productToAdd.Title == "")
+                {
+                    Console.Clear();
+                    Console.WriteLine("\nYou must enter a title.");
+                    PressAnyKey();
+                }
 
-            // TRY CATCH HERE
-            Console.Write("Price: ");
-            productToAdd.Price = Convert.ToDecimal(Console.ReadLine());
+            } while (productToAdd.Title == "");
+
+            do
+            {
+                Console.Clear();
+                Console.WriteLine($"Title: {productToAdd.Title}");
+                Console.Write("Description: ");
+                productToAdd.Description = Console.ReadLine();
+
+                if (productToAdd.Description == "")
+                {
+                    Console.Clear();
+                    Console.WriteLine("\nYou must enter a description.");
+                    PressAnyKey();
+                }
+
+            } while (productToAdd.Description == "");
+
+            bool loop = true;
+
+            do
+            {
+                try
+                {
+                    Console.Clear();
+                    Console.WriteLine($"Title: {productToAdd.Title}");
+                    Console.WriteLine($"Description: {productToAdd.Description}");
+                    Console.Write("Price: ");
+                    productToAdd.Price = Convert.ToDecimal(Console.ReadLine());
+                    loop = false;
+                }
+                catch 
+                {
+                    Console.Clear();
+                    Console.WriteLine("\nYou can only enter a number.");
+                    PressAnyKey();
+                }
+
+            } while (loop);
+
 
             productToAdd.CategoryId = SelectCategoryFromList();
             productToAdd.SubCategoryId = SelectSubCategoryFromList(productToAdd.CategoryId);
@@ -1434,15 +1502,16 @@ public class MenuService
         }
         Console.Clear();
     }
-    public int SelectProductFromList()
+    public int SelectProductFromList(int subCategory)
     {
-        var products = _productService.GetAllProducts().ToList();
+        var products = _productService.GetAllProducts(subCategory).ToList();
         bool loop = true;
 
         do
         {
             Console.Clear();
 
+            Console.WriteLine();
             Console.WriteLine("---------------------");
             Console.WriteLine("Product: ");
             for (int i = 0; i < products.Count(); i++)
@@ -1474,6 +1543,10 @@ public class MenuService
 
 
     // ----------------- CATEGORIES ------------------- //
+    /// <summary>
+    /// Select a category from list of available categories.
+    /// </summary>
+    /// <returns>the id of the category as an integer.</returns>
     public int SelectCategoryFromList()
     {
         var categories = _productService.GetAllCategories().ToList();
@@ -1483,6 +1556,7 @@ public class MenuService
         {
             Console.Clear();
 
+            Console.WriteLine();
             Console.WriteLine("---------------------");
             Console.WriteLine("Category: ");
             for (int i = 0; i < categories.Count(); i++)
@@ -1559,7 +1633,7 @@ public class MenuService
                 Console.WriteLine();
                 Console.WriteLine("WARNING - DELETING A CATEGORY WILL DELETE ALL PRODUCTS, SUB CATEGORIES AND ORDERS ASSOCIATED WITH IT.");
                 Console.WriteLine();
-                Console.Write("Enter category ID of the category you wish to delete (enter 0 to go back): ");
+                Console.Write("Enter category ID of the category you wish to delete (enter 0 to abort): ");
                 categorydId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -1631,6 +1705,10 @@ public class MenuService
 
 
     // --------------- SUB CATEGORIES  ---------------- //
+    /// <summary>
+    /// Pass the Category Id and select a sub category from list of available sub categories, based on the category ID (parent).
+    /// </summary>
+    /// <returns>the id of the sub category as an integer.</returns>
     public int SelectSubCategoryFromList(int id)
     {
         var subCategories = _productService.GetAllSubCategories(id).ToList();
@@ -1640,6 +1718,7 @@ public class MenuService
         {
             Console.Clear();
 
+            Console.WriteLine();
             Console.WriteLine("---------------------");
             Console.WriteLine("Sub Categories: ");
             for (int i = 0; i < subCategories.Count(); i++)
@@ -1729,7 +1808,7 @@ public class MenuService
                 Console.WriteLine();
                 Console.WriteLine("WARNING - DELETING A SUB CATEGORY WILL DELETE ALL PRODUCTS AND ORDERS ASSOCIATED WITH IT.");
                 Console.WriteLine();
-                Console.Write("Enter sub category ID of the sub category you wish to delete (enter 0 to go back): ");
+                Console.Write("Enter sub category ID of the sub category you wish to delete (enter 0 to abort): ");
                 subCategorydId = Convert.ToInt32(Console.ReadLine());
 
                 if (subCategorydId == 0)
@@ -1812,6 +1891,11 @@ public class MenuService
 
 
     // ------------------- BRANDS --------------------- //
+    
+    /// <summary>
+    /// Select a brand from list of available brands.
+    /// </summary>
+    /// <returns>the id of the brand as an integer.</returns>
     public int SelectBrandFromList()
     {
         var brands = _productService.GetAllBrands().ToList();
@@ -1821,6 +1905,7 @@ public class MenuService
         {
             Console.Clear();
 
+            Console.WriteLine();
             Console.WriteLine("---------------------");
             Console.WriteLine("Brand: ");
             for (int i = 0; i < brands.Count(); i++)
@@ -1895,7 +1980,7 @@ public class MenuService
             try
             {
                 Console.WriteLine();
-                Console.Write("Enter brand ID of the brand you wish to delete (enter 0 to cancel): ");
+                Console.Write("Enter brand ID of the brand you wish to delete (enter 0 to abort): ");
                 brandId = Convert.ToInt32(Console.ReadLine());
 
                 loop = false;
@@ -1967,6 +2052,9 @@ public class MenuService
 
 
     // -------------------- MISC ---------------------- //
+    /// <summary>
+    /// Writes press any key to continue to the console and waits for user input.
+    /// </summary>
     public void PressAnyKey() 
     {
         Console.WriteLine();
@@ -1974,6 +2062,11 @@ public class MenuService
         Console.ReadKey();
         Console.Clear();
     }
+    
+    /// <summary>
+    /// Dialogue for getting user input for quantity.
+    /// </summary>
+    /// <returns>int of desired quantity.</returns>
     public int SetQuantity()
     {
         bool loop = true;
@@ -1998,6 +2091,12 @@ public class MenuService
         } while (loop);
         return 0;
     }
+
+    /// <summary>
+    /// Multiplies the quantity and product price of an order row. 
+    /// </summary>
+    /// <param name="orderRow"></param>
+    /// <returns>price as decimal data type.</returns>
     public decimal SetPrice(OrderRowEntity orderRow)
     {
         var result = _productService.GetProduct(orderRow.ProductId);

@@ -23,10 +23,8 @@ public class CustomerEntity
     public string Email { get; set; } = null!;
 
     [Required]
-    //[ForeignKey("Addresses")]
     public int AddressId { get; set; }
 
-    //NAVS
     public virtual ICollection<OrderEntity>? Orders { get; set; }
     public virtual AddressEntity Address { get; set; } = null!;
 
@@ -37,8 +35,7 @@ public class CustomerEntity
             FirstName = customer.FirstName,
             LastName = customer.LastName,
             Email = customer.Email,
-            AddressId = (int)customer.AddressId,
-            //Id = (int)customer.Id
+            AddressId = (int)customer.AddressId!,
         };
     }
 }

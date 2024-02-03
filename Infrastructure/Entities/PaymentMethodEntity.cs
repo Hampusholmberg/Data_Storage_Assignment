@@ -11,6 +11,5 @@ public class PaymentMethodEntity
     [StringLength(50)]
     public string PaymentMethodName { get; set; } = null!;
 
-    //NAVS
     public virtual ICollection<OrderEntity>? Orders { get; set; }
 }

@@ -10,7 +10,5 @@ public class DeliveryMethodEntity
     [Required]
     [StringLength(50)]
     public string DeliveryMethodName { get; set; } = null!;
-
-    //NAVS
     public virtual ICollection<OrderEntity>? Orders { get; set; }
 }
