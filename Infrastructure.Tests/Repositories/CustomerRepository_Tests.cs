@@ -93,4 +93,39 @@ public class CustomerRepository_Tests
         genericTests.GetOne_ShouldReturnAnEntityBasedOnExpression_OrderDbContext(customer);
     }
 
+    [Fact]
+    public void Update_ShouldUpdateCustomerInDatabase()
+    {
+        CustomerEntity oldCustomer = new()
+        {
+            FirstName = $"Test1",
+            LastName = $"Test1",
+            Email = $"Test1",
+            
+            Address =  new AddressEntity
+            {
+                Id = 1,
+                StreetName = "Test1",
+                PostalCode = "Test1",
+                City = "Test1",
+            }
+        };
+        CustomerEntity newCustomer = new()
+        {
+            FirstName = $"Test2",
+            LastName = $"Test2",
+            Email = $"Test2",
+
+            Address = new AddressEntity
+            {
+                Id = 2,
+                StreetName = "Test2",
+                PostalCode = "Test2",
+                City = "Test2",
+            }
+        };
+
+        genericTests.Update_ShouldUpdateAnEntity_OrderDbContext(oldCustomer, newCustomer);
+    }
+
 }
