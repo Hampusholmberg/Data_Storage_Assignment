@@ -1,9 +1,7 @@
 ﻿using Infrastructure.Contexts;
-using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Infrastructure.Tests.Repositories;
 
@@ -130,5 +128,104 @@ public class BaseRepository_Tests
 
     // ------------- PRODUCT DB ------------- //
 
+    /// <summary>
+    /// Generic testing of the "create"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="entity"></param>
+    public void Create_ShouldSaveEntityToDatabase_ProductCatalogContext<TEntity>(TEntity entity) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, ProductCatalogContext>(_productContext);
 
+        // Act
+        var result = repository.Create(entity);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(result, entity);
+    }
+
+    /// <summary>
+    /// Generic testing of the "delete"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="entity"></param>
+    public void Delete_ShouldRemoveEntityFromDatabase_ProductCatalogContext<TEntity>(TEntity entity) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, ProductCatalogContext>(_productContext);
+        var addedEntity = repository.Create(entity);
+
+
+        // Act
+        var result = repository.Delete(entity);
+
+
+        // Assert
+        using (ProductCatalogContext context = _productContext)
+        {
+            Assert.True(result);
+        }
+    }
+
+    /// <summary>
+    /// Generic testing of the "get all"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public void GetAll_ShouldReturnAListWithAllTheObjectOfTheSelectedEntity_ProductCatalogContext<TEntity>(List<TEntity> entities) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, ProductCatalogContext>(_productContext);
+
+        foreach (var entity in entities)
+        {
+            repository.Create(entity);
+        }
+
+        // Act
+        var testlist = repository.GetAll();
+
+        // Assert
+        using (ProductCatalogContext context = _productContext)
+        {
+            Assert.Equal(testlist.Count(), entities.Count());
+        }
+    }
+
+    /// <summary>
+    /// Generic testing of the "get one"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public void GetOne_ShouldReturnAnEntityBasedOnExpression_ProductCatalogContext<TEntity>(TEntity entity) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, ProductCatalogContext>(_productContext);
+
+        // Act
+        var addedEntity = repository.Create(entity);
+        var primaryKeyValue = _productContext.Entry(addedEntity).Property("Id").CurrentValue;
+        var result = repository.GetOne(x => EF.Property<int>(x, "Id") == (int)primaryKeyValue);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(result, addedEntity);
+    }
+
+    /// <summary>
+    /// Generic testing of the "get one"-method in the BaseRepository. Call it in the different repository tests and pass the entity to be tested on.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public void Update_ShouldUpdateAnEntity_ProductCatalogContext<TEntity>(TEntity oldEntity, TEntity newEntity) where TEntity : class
+    {
+        // Arrange
+        var repository = new BaseRepository<TEntity, ProductCatalogContext>(_productContext);
+
+        // Act
+        oldEntity = repository.Create(oldEntity);
+        var updatedEntity = repository.Update(newEntity);
+
+        // Assert
+        Assert.NotEqual(oldEntity, updatedEntity);
+    }
 }

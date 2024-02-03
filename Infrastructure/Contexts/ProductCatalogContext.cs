@@ -27,7 +27,8 @@ public partial class ProductCatalogContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Education\\04._Datalagring\\Data_Storage_Assignment\\Infrastructure\\Data\\ProductCatalog\\ProductCatalog.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True");
+        //optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Education\\04._Datalagring\\Data_Storage_Assignment\\Infrastructure\\Data\\ProductCatalog\\ProductCatalog.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True");
+
         optionsBuilder.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddFilter((category, level) => level >= LogLevel.Warning)));
     }
 
