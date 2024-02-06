@@ -49,7 +49,7 @@ public class ProductService
     }
 
     /// <summary>
-    /// This overload of the GetAllSubcategories will return all the sub categories that has the passed Category ID.
+    /// This overload of the GetAllProducts will return all the products that has the passed Sub Category ID.
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -70,7 +70,6 @@ public class ProductService
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return null!;
     }
-
     public Product GetProduct(int id)
     {
         try
@@ -269,8 +268,7 @@ public class ProductService
         try
         {
             var result = _brandRepository.Delete(brand);
-            return result;
-
+            return result;            
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return false;

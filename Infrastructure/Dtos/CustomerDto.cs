@@ -11,7 +11,6 @@ public class CustomerDto
     public string PostalCode { get; set; } = null!;
     public string City { get; set; } = null!;
     public int? AddressId { get; set; }
-    //public int? Id { get; set; }
 
     public static implicit operator CustomerDto((CustomerEntity customer, AddressEntity address) source)
     {

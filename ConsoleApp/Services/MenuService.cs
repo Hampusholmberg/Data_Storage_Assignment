@@ -514,10 +514,8 @@ public class MenuService
     // ------------------- ORDERS --------------------- //
     public void ShowAllOrders()
     {
-        //var orders = _orderService.GetAllOrders().ToList();
         var orders = _orderService.GetAllOrders();
 
-        //var orders = _orderRepository.GetAll();
         Console.Clear();
 
         Console.WriteLine("---------------------");
@@ -1316,6 +1314,7 @@ public class MenuService
                     orderRow.RowPrice = SetPrice(orderRow);
                     _orderService.CreateOrderRow(orderRow);
                     break;
+
                 case "2":
                     loop = false;
                     break;
@@ -1337,6 +1336,10 @@ public class MenuService
     {
         var products = _productService.GetAllProducts().ToList();
         Console.Clear();
+
+        products.Sort((x, y) => x.Title.CompareTo(y.Title));
+        products.Sort((x, y) => x.SubCategory.SubCategoryName.CompareTo(y.SubCategory.SubCategoryName));
+        products.Sort((x, y) => x.Category.CategoryName.CompareTo(y.Category.CategoryName));
 
         Console.WriteLine("---------------------");
         Console.WriteLine("ALL PRODUCTS");

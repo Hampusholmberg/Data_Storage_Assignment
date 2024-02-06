@@ -145,7 +145,12 @@ public class CustomerService
     /// <returns>a list of customer along with their respective address.</returns>
     public IEnumerable<CustomerEntity> GetAllCustomers()
     {
-        var customers = _customerRepository.GetAll();
-        return customers;
+        try
+        {
+            var customers = _customerRepository.GetAll();
+            return customers;
+        }
+        catch(Exception ex) { Debug.WriteLine(ex.Message); };
+        return null!;        
     }
 }
